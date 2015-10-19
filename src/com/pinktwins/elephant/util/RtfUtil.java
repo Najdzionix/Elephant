@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import com.pinktwins.rtf.RTFEditorKit;
+//import com.pinktwins.rtf.RTFEditorKit;
 
 public class RtfUtil {
 
@@ -21,8 +21,8 @@ public class RtfUtil {
 	public static String getRtf(Document doc) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			RTFEditorKit kit = new RTFEditorKit();
-			kit.write(baos, doc, doc.getStartPosition().getOffset(), doc.getLength());
+//			RTFEditorKit kit = new RTFEditorKit();
+//			kit.write(baos, doc, doc.getStartPosition().getOffset(), doc.getLength());
 
 			String rtfContent = baos.toString();
 			{
@@ -49,7 +49,7 @@ public class RtfUtil {
 	}
 
 	public static void putRtf(Document doc, String rtfContents, int position) throws IOException, BadLocationException {
-		RTFEditorKit kit = new RTFEditorKit();
-		kit.read(new StringReader(rtfContents), doc, position);
+//		RTFEditorKit kit = new RTFEditorKit();
+//		kit.read(new StringReader(rtfContents), doc, position);
 	}
 }
