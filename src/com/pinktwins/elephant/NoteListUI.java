@@ -1,21 +1,10 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.util.Iterator;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-
 import com.pinktwins.elephant.util.Images;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Iterator;
 
 public class NoteListUI {
 

@@ -1,15 +1,16 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.panel;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import com.pinktwins.elephant.EditorEventListener;
+import com.pinktwins.elephant.ElephantWindow;
+import com.pinktwins.elephant.editor.CustomEditor;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.TextComponentUtil;
+
+import javax.swing.*;
+import javax.swing.text.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -17,23 +18,6 @@ import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Element;
-import javax.swing.text.ElementIterator;
-import javax.swing.text.StyleConstants;
-
-import com.pinktwins.elephant.util.CustomMouseListener;
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.Images;
-import com.pinktwins.elephant.util.TextComponentUtil;
 
 public class TagEditorPane {
 

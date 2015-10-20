@@ -1,52 +1,22 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.Iterator;
-
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
-import javax.swing.KeyStroke;
-import javax.swing.border.Border;
-
-import org.apache.commons.lang3.SystemUtils;
-
 import com.google.common.eventbus.Subscribe;
-import com.pinktwins.elephant.NoteEditor.NoteEditorStateListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.eventbus.NoteChangedEvent;
-import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
-import com.pinktwins.elephant.eventbus.StyleCommandEvent;
-import com.pinktwins.elephant.eventbus.UIEvent;
-import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
-import com.pinktwins.elephant.eventbus.VaultEvent;
+import com.pinktwins.elephant.editor.NoteEditor;
+import com.pinktwins.elephant.eventbus.*;
+import com.pinktwins.elephant.panel.CustomSplitPane;
 import com.pinktwins.elephant.util.Images;
+import org.apache.commons.lang3.SystemUtils;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.util.Iterator;
 
 public class ElephantWindow extends JFrame {
 
@@ -974,7 +944,7 @@ public class ElephantWindow extends JFrame {
 
 		setJMenuBar(menuBar);
 
-		noteEditor.addStateListener(new NoteEditorStateListener() {
+		noteEditor.addStateListener(new NoteEditor.NoteEditorStateListener() {
 			@Override
 			public void stateChange(boolean hasFocus, boolean hasSelection) {
 				iCut.setEnabled(hasSelection);

@@ -1,30 +1,5 @@
 package com.pinktwins.elephant;
 
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
-
-import javax.swing.JScrollBar;
-import javax.swing.SwingWorker;
-
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.NoteItem.NoteItemListener;
 import com.pinktwins.elephant.data.Note;
@@ -32,10 +7,20 @@ import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
+import com.pinktwins.elephant.panel.BackgroundPanel;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.ResizeListener;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 public class NoteList extends BackgroundPanel implements NoteItemListener {
 

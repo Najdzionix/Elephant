@@ -1,12 +1,10 @@
 package com.pinktwins.elephant.ui;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Utilities;
+import java.awt.event.ActionEvent;
 
 /**
  * When tab or shift tab is pressed something should happen if a bullet list is edited

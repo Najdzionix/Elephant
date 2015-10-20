@@ -1,19 +1,16 @@
 package com.pinktwins.elephant;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
+import com.pinktwins.elephant.data.Vault;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FilenameUtils;
-
-import com.pinktwins.elephant.data.Vault;
 
 public class ImageScalingCache {
 

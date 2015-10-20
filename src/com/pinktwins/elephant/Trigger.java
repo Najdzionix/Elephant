@@ -1,8 +1,8 @@
 package com.pinktwins.elephant;
 
-import java.util.List;
-
 import com.pinktwins.elephant.util.Factory;
+
+import java.util.List;
 
 class Trigger {
 	private final List<Trigger> list = Factory.newArrayList();

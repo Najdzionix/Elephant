@@ -1,19 +1,19 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.panel;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
+import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.NoteList;
+
+import javax.swing.*;
+import javax.swing.plaf.SplitPaneUI;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import javax.swing.JSplitPane;
-import javax.swing.plaf.SplitPaneUI;
-import javax.swing.plaf.basic.BasicSplitPaneDivider;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 public class CustomSplitPane extends JSplitPane {
 	private static final long serialVersionUID = -8922501394423552180L;

@@ -1,16 +1,26 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.editor;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
+import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.*;
+import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.TagsChangedEvent;
+import com.pinktwins.elephant.eventbus.UIEvent;
+import com.pinktwins.elephant.model.AttachmentInfo;
+import com.pinktwins.elephant.panel.BackgroundPanel;
+import com.pinktwins.elephant.panel.CustomScrollPane;
+import com.pinktwins.elephant.panel.TagEditorPane;
+import com.pinktwins.elephant.util.*;
+import org.apache.commons.lang3.SystemUtils;
+import org.pegdown.PegDownProcessor;
+
+import javax.swing.*;
+import javax.swing.text.AbstractDocument.LeafElement;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -23,37 +33,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JTextPane;
-import javax.swing.Scrollable;
-import javax.swing.SwingConstants;
-import javax.swing.TransferHandler;
-import javax.swing.text.AbstractDocument.LeafElement;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-
-import org.apache.commons.lang3.SystemUtils;
-import org.pegdown.PegDownProcessor;
-
-import com.google.common.eventbus.Subscribe;
-import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.Note.Meta;
-import com.pinktwins.elephant.data.Notebook;
-import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.eventbus.TagsChangedEvent;
-import com.pinktwins.elephant.eventbus.UIEvent;
-import com.pinktwins.elephant.util.CustomMouseListener;
-import com.pinktwins.elephant.util.Images;
-import com.pinktwins.elephant.util.LaunchUtil;
-import com.pinktwins.elephant.util.ResizeListener;
-import com.pinktwins.elephant.util.SimpleImageInfo;
 
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
@@ -71,6 +50,25 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private final int kBorder = 14;
 
 	private Note loadAfterLayout = null;
+	public EditorWidthImageScaler editorWidthScaler = new EditorWidthImageScaler();
+	public ImageAttachmentImageScaler imageAttachmentImageScaler = new ImageAttachmentImageScaler();
+	public EditorController editorController = new EditorController(this);
+
+	NoteEditorStateListener stateListener;
+
+	private Note currentNote, previousNote;
+	private NoteAttachments attachments = new NoteAttachments();
+
+	JPanel main, area;
+	ScrollablePanel areaHolder;
+	BackgroundPanel scrollHolder;
+	CustomScrollPane scroll;
+	public CustomEditor editor;
+	TagEditorPane tagPane;
+	BackgroundPanel topShadow;
+	JButton currNotebook, trash;
+	JLabel noteCreated, noteUpdated;
+	BorderLayout areaHolderLayout;
 
 	public static final ImageScalingCache scalingCache = new ImageScalingCache();
 
@@ -85,7 +83,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		noteToolsDivider = i.next();
 	}
 
-	interface NoteEditorStateListener {
+	public interface NoteEditorStateListener {
 		public void stateChange(boolean hasFocus, boolean hasSelection);
 	}
 
@@ -118,7 +116,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
-	class ImageAttachmentImageScaler implements ImageScaler {
+	public class ImageAttachmentImageScaler implements ImageScaler {
 		public Image scale(Image i, File source) {
 			return getScaledImage(i, source, 0, false);
 		}
@@ -128,44 +126,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			return getScaledImageCacheOnly(source, 0, false);
 		}
 	}
-
-	class EditorController {
-		public void scrollTo(int value) {
-			scroll.getVerticalScrollBar().setValue(value);
-		}
-
-		public void lockScrolling(boolean value) {
-			scroll.setLocked(value);
-		}
-
-		public int noteHash() {
-			if (currentNote == null) {
-				return 0;
-			} else {
-				return currentNote.hashCode();
-			}
-		}
-	}
-
-	EditorWidthImageScaler editorWidthScaler = new EditorWidthImageScaler();
-	ImageAttachmentImageScaler imageAttachmentImageScaler = new ImageAttachmentImageScaler();
-	EditorController editorController = new EditorController();
-
-	NoteEditorStateListener stateListener;
-
-	private Note currentNote, previousNote;
-	private NoteAttachments attachments = new NoteAttachments();
-
-	JPanel main, area;
-	ScrollablePanel areaHolder;
-	BackgroundPanel scrollHolder;
-	CustomScrollPane scroll;
-	CustomEditor editor;
-	TagEditorPane tagPane;
-	BackgroundPanel topShadow;
-	JButton currNotebook, trash;
-	JLabel noteCreated, noteUpdated;
-	BorderLayout areaHolderLayout;
 
 	private class DividedPanel extends BackgroundPanel {
 		private static final long serialVersionUID = -7285142017724975923L;
@@ -829,15 +789,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void importAttachments(List<AttachmentInfo> info) {
 		for (AttachmentInfo i : info) {
-			File f = attachments.get(i.object);
+			File f = attachments.get(i.getObject());
 			if (f != null) {
 				// Use note.att-path in case note was renamed
 				File ff = new File(currentNote.attachmentFolderPath() + File.separator + f.getName());
 
 				// remove previous object mapping,
-				attachments.remove(i.object);
+				attachments.remove(i.getObject());
 				// insert.. will map a new Object -> File
-				attachments.insertFileIntoNote(this, ff, i.startPosition);
+				attachments.insertFileIntoNote(this, ff, i.getStartPosition());
 			}
 		}
 	}
@@ -852,5 +812,25 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	@Override
 	public void attachmentMoved(AttachmentInfo info) {
 		attachments.makeDirty();
+	}
+
+	public static Logger getLOG() {
+		return LOG;
+	}
+
+	public Note getCurrentNote() {
+		return currentNote;
+	}
+
+	public void setCurrentNote(Note currentNote) {
+		this.currentNote = currentNote;
+	}
+
+	public Note getPreviousNote() {
+		return previousNote;
+	}
+
+	public void setPreviousNote(Note previousNote) {
+		this.previousNote = previousNote;
 	}
 }

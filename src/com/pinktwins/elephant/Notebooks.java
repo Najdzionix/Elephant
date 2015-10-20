@@ -1,27 +1,22 @@
 package com.pinktwins.elephant;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Image;
+import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.eventbus.VaultEvent;
+import com.pinktwins.elephant.panel.BackgroundPanel;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
-import com.google.common.eventbus.Subscribe;
-import com.pinktwins.elephant.data.Notebook;
-import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.eventbus.NotebookEvent;
-import com.pinktwins.elephant.eventbus.VaultEvent;
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.Images;
 
 public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 

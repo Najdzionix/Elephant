@@ -1,82 +1,40 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.editor;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.KeyboardFocusManager;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.*;
+import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.eventbus.StyleCommandEvent;
+import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
+import com.pinktwins.elephant.model.AttachmentInfo;
+import com.pinktwins.elephant.panel.BrowserPane;
+import com.pinktwins.elephant.panel.BrowserPane.BrowserEventListener;
+import com.pinktwins.elephant.panel.HtmlPane;
+import com.pinktwins.elephant.panel.RoundPanel;
+import com.pinktwins.elephant.ui.AutoIndentAction;
+import com.pinktwins.elephant.ui.HomeAction;
+import com.pinktwins.elephant.ui.ShiftTabAction;
+import com.pinktwins.elephant.ui.TabAction;
+import com.pinktwins.elephant.util.*;
+import org.apache.commons.io.IOUtils;
+
+import javax.activation.DataHandler;
+import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.*;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.event.*;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.activation.DataHandler;
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.TransferHandler;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultCaret;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.text.ElementIterator;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledEditorKit;
-import javax.swing.undo.UndoManager;
-
-import org.apache.commons.io.IOUtils;
-
-import com.google.common.eventbus.Subscribe;
-import com.pinktwins.elephant.BrowserPane.BrowserEventListener;
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.eventbus.StyleCommandEvent;
-import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
-import com.pinktwins.elephant.ui.AutoIndentAction;
-import com.pinktwins.elephant.ui.HomeAction;
-import com.pinktwins.elephant.ui.ShiftTabAction;
-import com.pinktwins.elephant.ui.TabAction;
-import com.pinktwins.elephant.util.CustomMouseListener;
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.ResizeListener;
-import com.pinktwins.elephant.util.RtfUtil;
-import com.pinktwins.elephant.util.TextComponentUtil;
 
 public class CustomEditor extends RoundPanel {
 
@@ -368,7 +326,7 @@ public class CustomEditor extends RoundPanel {
 		}
 	}
 
-	AttributeSet getAttributes(int position) {
+	public AttributeSet getAttributes(int position) {
 		return ((CustomDocument) note.getDocument()).getCharacterElement(position).getAttributes();
 	}
 
@@ -861,12 +819,6 @@ public class CustomEditor extends RoundPanel {
 		title.requestFocusInWindow();
 	}
 
-	class AttachmentInfo {
-		Object object;
-		int startPosition;
-		int endPosition;
-	}
-
 	public List<AttachmentInfo> getAttachmentInfo() {
 		List<AttachmentInfo> list = Factory.newArrayList();
 
@@ -876,17 +828,17 @@ public class CustomEditor extends RoundPanel {
 			AttributeSet as = element.getAttributes();
 			if (as.containsAttribute(ELEM, ICON)) {
 				AttachmentInfo info = new AttachmentInfo();
-				info.object = StyleConstants.getIcon(as);
-				info.startPosition = element.getStartOffset();
-				info.endPosition = element.getEndOffset();
+				info.setObject(StyleConstants.getIcon(as));
+				info.setStartPosition(element.getStartOffset());
+				info.setEndPosition(element.getEndOffset());
 				list.add(info);
 			}
 
 			if (as.containsAttribute(ELEM, COMP)) {
 				AttachmentInfo info = new AttachmentInfo();
-				info.object = StyleConstants.getComponent(as);
-				info.startPosition = element.getStartOffset();
-				info.endPosition = element.getEndOffset();
+				info.setObject(StyleConstants.getComponent(as));
+				info.setStartPosition(element.getStartOffset());
+				info.setEndPosition(element.getEndOffset());
 				list.add(info);
 			}
 		}
@@ -903,17 +855,17 @@ public class CustomEditor extends RoundPanel {
 
 		Collections.reverse(info_reverse);
 		for (AttachmentInfo i : info_reverse) {
-			int tagLen = i.endPosition - i.startPosition;
+			int tagLen = i.getEndPosition() - i.getStartPosition();
 			if (tagLen < 5) { // might be unneccessary safety
 				try {
-					getTextPane().getDocument().remove(i.startPosition, tagLen);
+					getTextPane().getDocument().remove(i.getStartPosition(), tagLen);
 
 					// Correct attachment position in the document
 					// WITHOUT
 					// any attachment element markers:
 					int n = info.indexOf(i);
-					i.startPosition -= n;
-					i.endPosition -= n;
+					i.setStartPosition(i.getStartPosition() - n);
+					i.setEndPosition(i.getEndPosition() - n);
 				} catch (BadLocationException e) {
 					LOG.severe("Fail: " + e);
 				}

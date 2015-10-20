@@ -1,20 +1,5 @@
 package com.pinktwins.elephant.data;
 
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.swing.JOptionPane;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
-
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.WatchDir.WatchDirListener;
@@ -22,6 +7,19 @@ import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Factory;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
 
 // 'root' data provider
 public class Vault implements WatchDirListener {

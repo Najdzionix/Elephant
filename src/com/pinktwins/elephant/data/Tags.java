@@ -1,5 +1,13 @@
 package com.pinktwins.elephant.data;
 
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.IOUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,15 +15,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.IOUtil;
 
 public class Tags {
 

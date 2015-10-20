@@ -1,21 +1,9 @@
 package com.pinktwins.elephant.data;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-
+import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.IOUtil;
+import com.pinktwins.elephant.util.RtfUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -25,10 +13,14 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.pinktwins.elephant.eventbus.NotebookEvent;
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.IOUtil;
-import com.pinktwins.elephant.util.RtfUtil;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
 
 public class Note implements Comparable<Note> {
 

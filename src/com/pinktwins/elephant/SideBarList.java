@@ -1,26 +1,18 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
+import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.panel.BackgroundPanel;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.Images;
 
 public class SideBarList extends JPanel {
 	private static final long serialVersionUID = 2473401062148102911L;

@@ -1,14 +1,5 @@
 package com.pinktwins.elephant.data;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.SideBarList.SideBarItemModifier;
@@ -16,6 +7,14 @@ import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class Shortcuts implements SideBarItemModifier {
 

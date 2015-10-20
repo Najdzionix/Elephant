@@ -1,12 +1,12 @@
 package com.pinktwins.elephant.util;
 
-import java.awt.Desktop;
+import org.apache.commons.lang3.SystemUtils;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang3.SystemUtils;
 
 public class LaunchUtil {
 	private static final Logger LOG = Logger.getLogger(LaunchUtil.class.getName());

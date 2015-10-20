@@ -1,14 +1,13 @@
 package com.pinktwins.elephant.data;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
-
+import com.pinktwins.elephant.NoteList.ListModes;
+import com.pinktwins.elephant.util.IOUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.pinktwins.elephant.NoteList.ListModes;
-import com.pinktwins.elephant.util.IOUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Logger;
 
 public class Settings {
 

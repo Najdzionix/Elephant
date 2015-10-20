@@ -1,13 +1,11 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.panel;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
 
 public class CustomScrollPane extends JScrollPane {
 	private boolean isLocked;

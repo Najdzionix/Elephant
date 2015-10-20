@@ -1,18 +1,17 @@
 package com.pinktwins.elephant.data;
 
+import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.IOUtil;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import org.apache.commons.io.FilenameUtils;
-
-import com.pinktwins.elephant.data.Note.Meta;
-import com.pinktwins.elephant.eventbus.NotebookEvent;
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.IOUtil;
 
 public class Notebook implements Comparable<Notebook> {
 

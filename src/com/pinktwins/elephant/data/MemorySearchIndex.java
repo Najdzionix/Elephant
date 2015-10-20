@@ -1,13 +1,12 @@
 package com.pinktwins.elephant.data;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
+import com.pinktwins.elephant.util.Factory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import com.pinktwins.elephant.util.Factory;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 // Naive and memory-wasteful index for instant searching.
 // Works well enough for up to 5,000 - 15,000 notes, after

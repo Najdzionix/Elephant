@@ -1,16 +1,9 @@
 package com.pinktwins.elephant;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-
-import javax.swing.JTextField;
-
 import org.apache.commons.lang3.SystemUtils;
+
+import javax.swing.*;
+import java.awt.*;
 
 // http://stackoverflow.com/questions/1738966/java-jtextfield-with-input-hint
 

@@ -1,12 +1,10 @@
 package com.pinktwins.elephant.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.logging.Logger;
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.logging.Logger;
 
 //import com.pinktwins.rtf.RTFEditorKit;
 

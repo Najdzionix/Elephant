@@ -1,15 +1,14 @@
 package com.pinktwins.elephant.util;
 
-import java.awt.Image;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.FilenameUtils;
 
 public class Images {
 

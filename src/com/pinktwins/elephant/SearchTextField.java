@@ -1,18 +1,10 @@
 package com.pinktwins.elephant;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Iterator;
-
 import com.pinktwins.elephant.util.Images;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Iterator;
 
 // :-o this class
 

@@ -1,10 +1,10 @@
 package com.pinktwins.elephant.data;
 
-import java.util.List;
-import java.util.Set;
-
 import com.pinktwins.elephant.eventbus.IndexProgressEvent;
 import com.pinktwins.elephant.util.Factory;
+
+import java.util.List;
+import java.util.Set;
 
 public class Search {
 

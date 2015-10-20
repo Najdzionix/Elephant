@@ -1,16 +1,15 @@
 package com.pinktwins.elephant.util;
 
+import com.google.common.io.Files;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.common.io.Files;
 
 public class IOUtil {
 

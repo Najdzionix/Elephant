@@ -1,6 +1,14 @@
 package com.pinktwins.elephant;
 
-import java.awt.Desktop;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.LaunchUtil;
+
+import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.Element;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -8,15 +16,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
-
-import javax.swing.JTextPane;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.Element;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
-
-import com.pinktwins.elephant.util.CustomMouseListener;
-import com.pinktwins.elephant.util.LaunchUtil;
 
 public class HtmlPaneMouseListener extends CustomMouseListener {
 

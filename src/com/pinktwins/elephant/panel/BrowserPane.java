@@ -1,17 +1,4 @@
-package com.pinktwins.elephant;
-
-import static javafx.concurrent.Worker.State.FAILED;
-
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.awt.event.MouseWheelEvent;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Logger;
+package com.pinktwins.elephant.panel;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -21,11 +8,6 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,6 +15,16 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseWheelEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Logger;
+
+import static javafx.concurrent.Worker.State.FAILED;
 
 public class BrowserPane extends JPanel {
 
@@ -48,7 +40,7 @@ public class BrowserPane extends JPanel {
 		}
 	}
 
-	interface BrowserEventListener {
+	public interface BrowserEventListener {
 		public void mouseWheelEvent(MouseWheelEvent e);
 	}
 

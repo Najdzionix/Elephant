@@ -1,8 +1,25 @@
 package com.pinktwins.elephant;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Image;
+import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.editor.CustomEditor;
+import com.pinktwins.elephant.editor.NoteEditor;
+import com.pinktwins.elephant.panel.BackgroundPanel;
+import com.pinktwins.elephant.panel.HtmlPane;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.PdfUtil;
+import com.pinktwins.elephant.util.SimpleImageInfo;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -12,26 +29,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.Images;
-import com.pinktwins.elephant.util.PdfUtil;
-import com.pinktwins.elephant.util.SimpleImageInfo;
 
 abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 

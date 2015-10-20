@@ -1,6 +1,6 @@
 package com.pinktwins.elephant;
 
-import java.awt.Image;
+import java.awt.*;
 import java.io.File;
 
 public interface ImageScaler {

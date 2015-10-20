@@ -1,13 +1,5 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.util.Iterator;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
@@ -15,7 +7,12 @@ import com.pinktwins.elephant.data.RecentNotes;
 import com.pinktwins.elephant.data.Shortcuts;
 import com.pinktwins.elephant.eventbus.RecentNotesChangedEvent;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
+import com.pinktwins.elephant.panel.BackgroundPanel;
 import com.pinktwins.elephant.util.Images;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Iterator;
 
 public class Sidebar extends BackgroundPanel {
 

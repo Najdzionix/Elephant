@@ -1,15 +1,11 @@
 package com.pinktwins.elephant.util;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.Transparency;
+import com.sun.pdfview.PDFFile;
+import com.sun.pdfview.PDFPage;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
@@ -20,12 +16,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
-import com.sun.pdfview.PDFFile;
-import com.sun.pdfview.PDFPage;
 
 // Based on:
 // http://stackoverflow.com/questions/550129/export-pdf-pages-to-a-series-of-images-in-java

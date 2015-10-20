@@ -1,25 +1,18 @@
 package com.pinktwins.elephant;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
+import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.panel.BackgroundPanel;
+import com.pinktwins.elephant.util.IOUtil;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.util.IOUtil;
 
 public class Start extends BackgroundPanel {
 

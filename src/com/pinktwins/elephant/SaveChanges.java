@@ -1,21 +1,22 @@
 package com.pinktwins.elephant;
 
+import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.editor.CustomEditor;
+import com.pinktwins.elephant.model.AttachmentInfo;
+import com.pinktwins.elephant.editor.NoteEditor;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.panel.TagEditorPane;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import javax.swing.ImageIcon;
-import javax.swing.text.BadLocationException;
-
-import org.apache.commons.io.FilenameUtils;
-
-import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.Notebook;
-import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 
 public class SaveChanges {
 
@@ -77,10 +78,10 @@ public class SaveChanges {
 				// Check which attachments were removed
 				Set<Object> remainingAttachments = attachments.keySet();
 				for (AttachmentInfo i : info) {
-					if (i.object instanceof ImageIcon || i.object instanceof FileAttachment) {
-						File f = attachments.get(i.object);
+					if (i.getObject() instanceof ImageIcon || i.getObject() instanceof FileAttachment) {
+						File f = attachments.get(i.getObject());
 						if (f != null) {
-							remainingAttachments.remove(i.object);
+							remainingAttachments.remove(i.getObject());
 						}
 					}
 				}
@@ -114,10 +115,10 @@ public class SaveChanges {
 				if (changed || attachments.didChange()) {
 					// update attachment positions in metadata
 					for (AttachmentInfo i : info) {
-						if (i.object instanceof ImageIcon || i.object instanceof FileAttachment) {
-							File f = attachments.get(i.object);
+						if (i.getObject() instanceof ImageIcon || i.getObject() instanceof FileAttachment) {
+							File f = attachments.get(i.getObject());
 							if (f != null) {
-								currentNote.getMeta().setAttachmentPosition(f, i.startPosition);
+								currentNote.getMeta().setAttachmentPosition(f, i.getStartPosition());
 							}
 						}
 					}

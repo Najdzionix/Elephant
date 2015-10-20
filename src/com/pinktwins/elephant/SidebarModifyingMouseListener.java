@@ -1,21 +1,16 @@
 package com.pinktwins.elephant;
 
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.util.Iterator;
-
-import org.apache.commons.lang3.SystemUtils;
-
 import com.pinktwins.elephant.SideBarList.SideBarItemModifier;
 import com.pinktwins.elephant.SideBarList.SideBarListItem;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Images;
+import org.apache.commons.lang3.SystemUtils;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.util.Iterator;
 
 class SidebarModifyingMouseListener extends CustomMouseListener implements MouseMotionListener {
 

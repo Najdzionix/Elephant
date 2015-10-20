@@ -4,10 +4,9 @@
 
 package com.pinktwins.elephant;
 
-import java.awt.event.FocusEvent;
-
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.text.DefaultCaret;
+import java.awt.event.FocusEvent;
 
 /**
  * Caret implementation that doesn't blow away the selection when we lose focus.

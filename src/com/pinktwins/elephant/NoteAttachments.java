@@ -1,24 +1,18 @@
 package com.pinktwins.elephant;
 
-import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JTextPane;
-
-import org.apache.commons.lang3.StringUtils;
-
+import com.pinktwins.elephant.editor.NoteEditor;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class NoteAttachments {
 
@@ -45,7 +39,7 @@ public class NoteAttachments {
 		attachments.remove(o);
 	}
 
-	void insertFileIntoNote(NoteEditor editor, File f, int position) {
+	public void insertFileIntoNote(NoteEditor editor, File f, int position) {
 		if (editor.getWidth() <= 0) {
 			throw new AssertionError();
 		}

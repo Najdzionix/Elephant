@@ -1,9 +1,10 @@
 package com.pinktwins.elephant.ui;
 
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Utilities;
+
 import static com.pinktwins.elephant.ui.UIConstants.COUNT_OF_SPACES_FOR_LIST_INDENT;
 
 public class ShiftTabAction extends GenericTabAction {

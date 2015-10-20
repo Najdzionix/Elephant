@@ -1,27 +1,5 @@
 package com.pinktwins.elephant;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
@@ -29,8 +7,19 @@ import com.pinktwins.elephant.data.Tag;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.SearchIndexChangedEvent;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
+import com.pinktwins.elephant.panel.BackgroundPanel;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Iterator;
+import java.util.List;
 
 public class TagList extends ToolbarList<TagList.TagItem> {
 

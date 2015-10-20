@@ -1,22 +1,13 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
+import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.panel.BackgroundPanel;
+import com.pinktwins.elephant.util.Images;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.Iterator;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.util.Images;
 
 public class SnippetViewNoteItem extends NoteItem {
 

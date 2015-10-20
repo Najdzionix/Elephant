@@ -1,12 +1,11 @@
 package com.pinktwins.elephant.util;
 
-import java.awt.EventQueue;
-import java.util.logging.Logger;
-
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.util.logging.Logger;
 
 public class TextComponentUtil {
 

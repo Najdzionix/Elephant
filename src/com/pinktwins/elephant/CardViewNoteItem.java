@@ -1,17 +1,11 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.io.File;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.panel.BackgroundPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 
 public class CardViewNoteItem extends NoteItem {
 

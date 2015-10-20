@@ -1,16 +1,13 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Frame;
+import com.pinktwins.elephant.data.Notebook;
+import org.apache.commons.lang3.SystemUtils;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
-import javax.swing.JDialog;
-
-import org.apache.commons.lang3.SystemUtils;
-
-import com.pinktwins.elephant.data.Notebook;
 
 public class NotebookChooser extends JDialog {
 

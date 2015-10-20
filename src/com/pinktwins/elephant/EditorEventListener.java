@@ -1,12 +1,11 @@
 package com.pinktwins.elephant;
 
+import com.pinktwins.elephant.model.AttachmentInfo;
+
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
-
-import javax.swing.JTextPane;
-
-import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 
 // Notify 'NoteEditor' that editing has gained/lost focus,
 // or other editing events happened.

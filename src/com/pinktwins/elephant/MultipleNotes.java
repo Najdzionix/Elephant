@@ -1,11 +1,20 @@
 package com.pinktwins.elephant;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
+import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.model.AttachmentInfo;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.eventbus.TagsChangedEvent;
+import com.pinktwins.elephant.panel.BackgroundPanel;
+import com.pinktwins.elephant.panel.TagEditorPane;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.ResizeListener;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -15,22 +24,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTextPane;
-
-import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.Note.Meta;
-import com.pinktwins.elephant.data.Notebook;
-import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.eventbus.NoteChangedEvent;
-import com.pinktwins.elephant.eventbus.TagsChangedEvent;
-import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.Images;
-import com.pinktwins.elephant.util.ResizeListener;
 
 public class MultipleNotes extends BackgroundPanel implements EditorEventListener {
 

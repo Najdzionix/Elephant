@@ -1,23 +1,18 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.Image;
-import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.IndexProgressEvent;
+import com.pinktwins.elephant.panel.BackgroundPanel;
 import com.pinktwins.elephant.util.Images;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Toolbar extends BackgroundPanel {
 

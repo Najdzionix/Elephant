@@ -1,13 +1,10 @@
 package com.pinktwins.elephant;
 
-import java.awt.Component;
-import java.awt.Rectangle;
-import java.util.List;
-
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-
 import org.pushingpixels.trident.Timeline;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
 
 public class ListController<T> {
 

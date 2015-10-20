@@ -1,15 +1,15 @@
 package com.pinktwins.elephant;
 
-import java.awt.EventQueue;
+import com.google.common.eventbus.EventBus;
+import com.pinktwins.elephant.data.Settings;
+import com.pinktwins.elephant.data.Vault;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-
-import com.google.common.eventbus.EventBus;
-import com.pinktwins.elephant.data.Settings;
-import com.pinktwins.elephant.data.Vault;
 
 public class Elephant {
 

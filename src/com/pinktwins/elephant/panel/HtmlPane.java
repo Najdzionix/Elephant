@@ -1,14 +1,14 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.panel;
 
+import com.pinktwins.elephant.HtmlPaneMouseListener;
+
+import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLDocument;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
-
-import javax.swing.JEditorPane;
-import javax.swing.JTextPane;
-import javax.swing.text.Document;
-import javax.swing.text.html.HTMLDocument;
 
 public class HtmlPane extends JTextPane {
 

@@ -1,30 +1,19 @@
 package com.pinktwins.elephant;
 
-import java.awt.AlphaComposite;
-import java.awt.Cursor;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
+import com.pinktwins.elephant.editor.CustomEditor;
+import com.pinktwins.elephant.model.AttachmentInfo;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Images;
+import org.apache.commons.lang3.SystemUtils;
+
+import javax.swing.*;
+import javax.swing.text.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.swing.ImageIcon;
-import javax.swing.JTextPane;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Highlighter;
-import javax.swing.text.StyleConstants;
-
-import org.apache.commons.lang3.SystemUtils;
-
-import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
-import com.pinktwins.elephant.util.CustomMouseListener;
-import com.pinktwins.elephant.util.Images;
 
 public class AttachmentDragMouseListener extends CustomMouseListener {
 
@@ -121,15 +110,15 @@ public class AttachmentDragMouseListener extends CustomMouseListener {
 			// Started dragging from image. Move image to current caret position.
 			List<AttachmentInfo> info = editor.getAttachmentInfo();
 			for (AttachmentInfo i : info) {
-				if (i.object == attachmentDragObject) {
-					AttributeSet as = editor.getAttributes(i.startPosition);
-					int len = i.endPosition - i.startPosition;
+				if (i.getObject() == attachmentDragObject) {
+					AttributeSet as = editor.getAttributes(i.getStartPosition());
+					int len = i.getEndPosition() - i.getStartPosition();
 					Document doc = note.getDocument();
 
 					if (!event.getPoint().equals(mouseDownPoint)) {
 						try {
-							String s = doc.getText(i.startPosition, len);
-							doc.remove(i.startPosition, len);
+							String s = doc.getText(i.getStartPosition(), len);
+							doc.remove(i.getStartPosition(), len);
 							doc.insertString(note.getCaretPosition(), s, as);
 							attachmentMoved(i);
 						} catch (BadLocationException e) {
@@ -137,8 +126,8 @@ public class AttachmentDragMouseListener extends CustomMouseListener {
 						}
 					}
 
-					if (i.object instanceof ImageIcon) {
-						attachmentObject = i.object;
+					if (i.getObject() instanceof ImageIcon) {
+						attachmentObject = i.getObject();
 					} else {
 						attachmentObject = null;
 					}
