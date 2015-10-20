@@ -15,6 +15,14 @@ import com.pinktwins.elephant.ui.HomeAction;
 import com.pinktwins.elephant.ui.ShiftTabAction;
 import com.pinktwins.elephant.ui.TabAction;
 import com.pinktwins.elephant.util.*;
+import com.sun.glass.ui.*;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.text.*;
+import javafx.scene.text.Font;
+import javafx.scene.web.HTMLEditor;
 import org.apache.commons.io.IOUtils;
 
 import javax.activation.DataHandler;
@@ -26,7 +34,9 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.*;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
+import java.awt.Color;
 import java.awt.datatransfer.*;
+import java.awt.datatransfer.Clipboard;
 import java.awt.event.*;
 import java.io.*;
 import java.net.MalformedURLException;
@@ -49,7 +59,7 @@ public class CustomEditor extends RoundPanel {
 	private HtmlPane htmlPane;
 	private BrowserPane browserPane;
 	private JPanel padding;
-
+	private MyHtmlEditor myHtmlEditor;
 	private UndoManager undoManager = new UndoManager();
 
 	public boolean isRichText, isMarkdown;
@@ -261,6 +271,26 @@ public class CustomEditor extends RoundPanel {
 
 		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 
+//		SwingUtilities.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				JFrame frame = new JFrame("FX");
+//				final JFXPanel fxPanel = new JFXPanel();
+//				frame.add(fxPanel);
+//				frame.setSize(1, 1);
+//				frame.setVisible(true);
+//				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//				Platform.runLater(new Runnable() {
+//					@Override
+//					public void run() {
+//						initFX(fxPanel);
+//					}
+//				});
+//			}
+//		});
+
+
+
 		title.addKeyListener(new KeyListener() {
 
 			@Override
@@ -282,7 +312,8 @@ public class CustomEditor extends RoundPanel {
 		titlePanel.add(title, BorderLayout.CENTER);
 
 		title.setText("");
-		add(titlePanel, BorderLayout.NORTH);
+		add(new MyHtmlEditor(), BorderLayout.NORTH);
+//		add(titlePanel, BorderLayout.NORTH);
 
 		createNote();
 
@@ -316,6 +347,31 @@ public class CustomEditor extends RoundPanel {
 				}
 			}
 		});
+	}
+
+	private void initFX(final JFXPanel fxPanel) {
+		//		myHtmlEditor = new MyHtmlEditor();
+//		final JFXPanel fxPanel = new JFXPanel();
+		Group  root  =  new Group();
+
+		Text  text  =  new Text();
+
+		text.setX(40);
+		text.setY(100);
+		text.setFont(new Font(25));
+		text.setText("Welcome JavaFX!");
+
+//		root.getChildren().add(text);
+//		Scene sce = new Scene(root, 300, 275);
+		HTMLEditor htmlEditor1 = new HTMLEditor();
+		htmlEditor1.setHtmlText("Welcome in MyHtmlEditor:)");
+		Scene scene = new Scene(htmlEditor1, javafx.scene.paint.Color.ALICEBLUE);
+		fxPanel.setScene(scene);
+		add(fxPanel, BorderLayout.NORTH);
+
+		com.sun.glass.ui.Robot robot = Application.GetApplication().createRobot();
+		robot.mouseMove(10, 30);
+		robot.mousePress(1);
 	}
 
 	void insertNewline(int position) {
