@@ -8,12 +8,7 @@ import java.util.Iterator;
 
 public class NoteListUI {
 
-	private static Image iAllNotes;
-
-	static {
-		Iterator<Image> i = Images.iterator(new String[] { "allNotes" });
-		iAllNotes = i.next();
-	}
+	private static Image iAllNotes = Images.loadImage(Images.ALL_NOTES);
 
 	JScrollPane scroll;
 	JPanel main, allNotesPanel, fillerPanel, sep;

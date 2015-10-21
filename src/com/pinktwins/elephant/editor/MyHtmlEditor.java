@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
- * Created by Kamil Nadonek on 20.10.15.
+ * Created by Kamil Nadłonek on 20.10.15.
  * email:kamilnadlonek@gmail.com
  */
 public class MyHtmlEditor  extends JPanel{

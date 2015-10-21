@@ -1,7 +1,7 @@
 package com.pinktwins.elephant.model;
 
 /**
- * Created by Kamil Nadonek on 20.10.15.
+ * Created by Kamil Nadłonek on 20.10.15.
  * email:kamilnadlonek@gmail.com
  */
 public class AttachmentInfo {

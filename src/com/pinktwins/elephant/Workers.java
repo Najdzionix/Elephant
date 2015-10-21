@@ -5,7 +5,7 @@ import com.pinktwins.elephant.util.Factory;
 import javax.swing.*;
 import java.util.List;
 
-class Workers<T> {
+public class Workers<T> {
 	private final List<SwingWorker<T, Void>> list = Factory.newArrayList();
 
 	public void add(SwingWorker<T, Void> w) {

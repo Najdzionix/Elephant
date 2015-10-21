@@ -5,7 +5,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
 /**
- * Created by Kamil Nadonek on 20.10.15.
+ * Created by Kamil Nadłonek on 20.10.15.
  * email:kamilnadlonek@gmail.com
  */
 public class CustomDocument extends DefaultStyledDocument {

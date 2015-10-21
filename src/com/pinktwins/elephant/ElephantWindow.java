@@ -8,6 +8,7 @@ import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.editor.NoteEditor;
 import com.pinktwins.elephant.eventbus.*;
 import com.pinktwins.elephant.panel.CustomSplitPane;
+import com.pinktwins.elephant.panel.StartPanel;
 import com.pinktwins.elephant.util.Images;
 import org.apache.commons.lang3.SystemUtils;
 
@@ -16,7 +17,6 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.Iterator;
 
 public class ElephantWindow extends JFrame {
 
@@ -68,7 +68,7 @@ public class ElephantWindow extends JFrame {
 	private JMenuItem iUndo, iRedo, iSaveSearch;
 	private JCheckBoxMenuItem iCard, iSnippet;
 
-	private static final Image elephantIcon;
+	private static final Image elephantIcon = Images.loadImage(Images.ELEPHANT_ICON);
 
 	enum UiModes {
 		notebooks, notes, tags
@@ -78,19 +78,11 @@ public class ElephantWindow extends JFrame {
 
 	private String previousSearchText = "";
 
-	static {
-		Iterator<Image> i = Images.iterator(new String[] { "elephantIcon" });
-		elephantIcon = i.next();
-	}
-
-	ActionListener newNoteAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// XXX if showing notebooks, open new note in solo window
-			showNotes();
-			newNote();
-		}
-	};
+	ActionListener newNoteAction = e -> {
+        // XXX if showing notebooks, open new note in solo window
+        showNotes();
+        newNote();
+    };
 
 	ActionListener saveNoteAction = new ActionListener() {
 		@Override
@@ -193,47 +185,17 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
-	ActionListener showAllNotesAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showAllNotes();
-		}
-	};
+	ActionListener showAllNotesAction = e -> showAllNotes();
 
-	ActionListener cutTextAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.cutAction();
-		}
-	};
+	ActionListener cutTextAction = e -> noteEditor.cutAction();
 
-	ActionListener copyTextAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.copyAction();
-		}
-	};
+	ActionListener copyTextAction = e -> noteEditor.copyAction();
 
-	ActionListener pasteTextAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.pasteAction();
-		}
-	};
+	ActionListener pasteTextAction = e -> noteEditor.pasteAction();
 
-	ActionListener editTitleAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.editor.focusTitle();
-		}
-	};
+	ActionListener editTitleAction = e -> noteEditor.editor.focusTitle();
 
-	ActionListener editTagsAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.focusTags();
-		}
-	};
+	ActionListener editTagsAction = e -> noteEditor.focusTags();
 
 	ActionListener moveNoteAction = new ActionListener() {
 		@Override
@@ -247,102 +209,62 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
-	ActionListener addSearchToShortcutsAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			String s = toolBar.search.getText();
-			if (!s.isEmpty()) {
-				sideBar.addToShortcuts("search:" + s);
-				new ShortcutsChangedEvent().post();
-			}
-		}
-	};
+	ActionListener addSearchToShortcutsAction = e -> {
+        String s = toolBar.search.getText();
+        if (!s.isEmpty()) {
+            sideBar.addToShortcuts("search:" + s);
+            new ShortcutsChangedEvent().post();
+        }
+    };
 
-	ActionListener addToShortcutsAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			for (Note n : noteList.getSelection()) {
-				sideBar.addToShortcuts(n);
-			}
-			new ShortcutsChangedEvent().post();
-		}
-	};
+	ActionListener addToShortcutsAction = e -> {
+        for (Note n : noteList.getSelection()) {
+            sideBar.addToShortcuts(n);
+        }
+        new ShortcutsChangedEvent().post();
+    };
 
-	ActionListener addNotebookToShortcutsAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			Notebook nb = null;
+	ActionListener addNotebookToShortcutsAction = e -> {
+        Notebook nb = null;
 
-			switch (uiMode) {
-			case notes:
-				nb = noteList.currentNotebook();
-				break;
-			case notebooks:
-				if (notebooks.selectedItem != null) {
-					nb = notebooks.selectedItem.getNotebook();
-				}
-				break;
-			case tags:
-				break;
-			default:
-				break;
-			}
-			if (nb != null && !nb.isDynamicallyCreatedNotebook()) {
-				sideBar.addToShortcuts(nb);
-				new ShortcutsChangedEvent().post();
-			}
-		}
-	};
+        switch (uiMode) {
+        case notes:
+            nb = noteList.currentNotebook();
+            break;
+        case notebooks:
+            if (notebooks.selectedItem != null) {
+                nb = notebooks.selectedItem.getNotebook();
+            }
+            break;
+        case tags:
+            break;
+        default:
+            break;
+        }
+        if (nb != null && !nb.isDynamicallyCreatedNotebook()) {
+            sideBar.addToShortcuts(nb);
+            new ShortcutsChangedEvent().post();
+        }
+    };
 
-	ActionListener jumpToNotebookAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (uiMode == UiModes.notes) {
-				noteList.openNotebookChooserForJumping();
-			}
-		}
-	};
+	ActionListener jumpToNotebookAction = e -> {
+        if (uiMode == UiModes.notes) {
+            noteList.openNotebookChooserForJumping();
+        }
+    };
 
-	ActionListener settingsAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showSettings();
-		}
-	};
+	ActionListener settingsAction = e -> showSettings();
 
-	ActionListener undoAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.undo();
-		}
-	};
+	ActionListener undoAction = e -> noteEditor.undo();
 
-	ActionListener redoAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.redo();
-		}
-	};
+	ActionListener redoAction = e -> noteEditor.redo();
 
-	ActionListener styleAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			new StyleCommandEvent(e).post();
-		}
-	};
+	ActionListener styleAction = e -> new StyleCommandEvent(e).post();
 
-	ActionListener plainTextAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.turnToPlainText();
-		}
-	};
+	ActionListener plainTextAction = e -> noteEditor.turnToPlainText();
 
-	ActionListener markdownAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-		}
-	};
+	ActionListener markdownAction = e -> {
+    };
 
 	public ElephantWindow() {
 		setTitle("Elephant Premium");
@@ -476,17 +398,14 @@ public class ElephantWindow extends JFrame {
 	}
 
 	private void callStart(JFrame frame) {
-		Start start = new Start(new Runnable() {
-			@Override
-			public void run() {
-				if (!Elephant.restartApplication()) {
-					JOptionPane.showMessageDialog(null, "Great! Now please restart.");
-					System.exit(0);
-				}
-			}
-		});
+		StartPanel startPanel = new StartPanel(() -> {
+            if (!Elephant.restartApplication()) {
+                JOptionPane.showMessageDialog(null, "Great! Now please restart.");
+                System.exit(0);
+            }
+        });
 
-		frame.add(start, BorderLayout.CENTER);
+		frame.add(startPanel, BorderLayout.CENTER);
 	}
 
 	private Rectangle loadBounds() {
@@ -944,14 +863,11 @@ public class ElephantWindow extends JFrame {
 
 		setJMenuBar(menuBar);
 
-		noteEditor.addStateListener(new NoteEditor.NoteEditorStateListener() {
-			@Override
-			public void stateChange(boolean hasFocus, boolean hasSelection) {
-				iCut.setEnabled(hasSelection);
-				iCopy.setEnabled(hasSelection);
-				iPaste.setEnabled(true);
-			}
-		});
+		noteEditor.addStateListener((hasFocus, hasSelection) -> {
+            iCut.setEnabled(hasSelection);
+            iCopy.setEnabled(hasSelection);
+            iPaste.setEnabled(true);
+        });
 	}
 
 	protected void newWindow() {

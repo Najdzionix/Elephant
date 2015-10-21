@@ -265,8 +265,8 @@ public class CustomEditor extends RoundPanel {
         titlePanel.add(title, BorderLayout.CENTER);
 
         title.setText("");
-        add(new MyHtmlEditor(), BorderLayout.NORTH);
-//		add(titlePanel, BorderLayout.NORTH);
+//        add(new MyHtmlEditor(), BorderLayout.NORTH);
+		add(titlePanel, BorderLayout.NORTH);
 
         createNote();
 
@@ -355,12 +355,9 @@ public class CustomEditor extends RoundPanel {
 
         note.setCaret(new SelectionPreservingCaret());
 
-        note.addCaretListener(new CaretListener() {
-            @Override
-            public void caretUpdate(CaretEvent e) {
-                if (eeListener != null) {
-                    eeListener.caretChanged(note);
-                }
+        note.addCaretListener(e -> {
+            if (eeListener != null) {
+                eeListener.caretChanged(note);
             }
         });
 

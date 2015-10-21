@@ -28,7 +28,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	private static final int SNIPPETVIEW_ITEMHEIGHT = 86;
 
-	private static Image tile;
+	private static Image tile = Images.loadImage(Images.NOTELIST);
 
 	private ElephantWindow window;
 
@@ -48,12 +48,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	private NoteListUI ui;
 
-	static {
-		Iterator<Image> i = Images.iterator(new String[] { "notelist" });
-		tile = i.next();
-	}
-
-	public static enum ListModes {
+	public enum ListModes {
 		CARDVIEW, SNIPPETVIEW
 	};
 

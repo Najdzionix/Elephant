@@ -31,7 +31,10 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 
 	private final ElephantWindow window;
 
-	private static Image tile, multiSelection, multiSelectionTagFocus, moveToNotebook;
+	private static Image tile = Images.loadImage(Images.NOTEBOOKS);
+	private static Image multiSelection = Images.loadImage(Images.MULTI_SELECTION);
+	private static Image multiSelectionTagFocus = Images.loadImage(Images.MULTI_SELECTION_TAG_FOCUS);
+	private static Image moveToNotebook = Images.loadImage(Images.MOVE_TO_NOTEBOOK);
 
 	private final Font headerFont = Font.decode("Helvetica-BOLD-16");
 	private final Color headerColor = Color.decode("#7a7a7a");
@@ -44,14 +47,6 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 	private Set<Note> currentNotes;
 
 	private List<String> emptyList = Collections.emptyList();
-
-	static {
-		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "multiSelection", "multiSelectionTagFocus", "moveToNotebook" });
-		tile = i.next();
-		multiSelection = i.next();
-		multiSelectionTagFocus = i.next();
-		moveToNotebook = i.next();
-	}
 
 	public MultipleNotes(ElephantWindow w) {
 		super(tile);

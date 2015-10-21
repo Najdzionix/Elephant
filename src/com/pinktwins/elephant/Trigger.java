@@ -4,7 +4,7 @@ import com.pinktwins.elephant.util.Factory;
 
 import java.util.List;
 
-class Trigger {
+public class Trigger {
 	private final List<Trigger> list = Factory.newArrayList();
 
 	public boolean isDown = false;

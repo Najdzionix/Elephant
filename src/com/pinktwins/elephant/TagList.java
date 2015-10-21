@@ -18,20 +18,14 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Iterator;
 import java.util.List;
 
 public class TagList extends ToolbarList<TagList.TagItem> {
 
-	private static Image tile, newTag;
+    private static Image tile = Images.loadImage(Images.NOTEBOOKS);
+    private static Image newTag = Images.loadImage(Images.NEW_TAG);
 
 	private ElephantWindow window;
-
-	static {
-		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "newTag" });
-		tile = i.next();
-		newTag = i.next();
-	}
 
 	public TagList(ElephantWindow w) {
 		super(tile, newTag, "Find a tag");

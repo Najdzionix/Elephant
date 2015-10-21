@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * Created by Kamil Nadonek on 20.10.15.
+ * Created by Kamil Nadłonek on 20.10.15.
  * email:kamilnadlonek@gmail.com
  */
 public class CustomTextPane extends JTextPane implements ClipboardOwner {

@@ -23,18 +23,13 @@ public class Sidebar extends BackgroundPanel {
 	public static final String ACTION_TAGS = "a:tags";
 
 	private ElephantWindow window;
-	private static Image tile, sidebarDivider;
+	private static Image tile = Images.loadImage(Images.SIDEBAR);
+	private  static  Image sidebarDivider = Images.loadImage(Images.SIDEBAR_DIVIDER);
 
 	private Shortcuts shortcuts = new Shortcuts();
 	private RecentNotes recentNotes = new RecentNotes();
 
 	SideBarList shortcutList, recentList, navigationList;
-
-	static {
-		Iterator<Image> i = Images.iterator(new String[] { "sidebar", "sidebarDivider" });
-		tile = i.next();
-		sidebarDivider = i.next();
-	}
 
 	public Sidebar(ElephantWindow w) {
 		super(tile);

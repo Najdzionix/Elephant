@@ -6,6 +6,9 @@ import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.editor.panel.DividedPanel;
+import com.pinktwins.elephant.editor.panel.ScrollablePanel;
+import com.pinktwins.elephant.editor.panel.TopShadowPanel;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.model.AttachmentInfo;
@@ -37,10 +40,10 @@ import java.util.logging.Logger;
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private static final Logger LOG = Logger.getLogger(NoteEditor.class.getName());
-
-	public static final int kMinNoteSize = 288;
-
-	private static Image tile, noteTopShadow, noteToolsNotebook, noteToolsTrash, noteToolsDivider;
+	public static final int kMinNoteSize = 288;    // TODO move to constatns class
+	private static Image tile = Images.loadImage(Images.NOTE_EDITOR);
+	private static Image noteToolsNotebook = Images.loadImage(Images.NOTE_TOOLS_NOTEBOOK);
+	private static Image noteToolsTrash = Images.loadImage(Images.NOTE_TOOLS_TRASH);
 
 	private ElephantWindow window;
 
@@ -74,34 +77,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public static final PegDownProcessor pegDown = new PegDownProcessor(org.pegdown.Parser.AUTOLINKS);
 
-	static {
-		Iterator<Image> i = Images.iterator(new String[] { "noteeditor", "noteTopShadow", "noteToolsNotebook", "noteToolsTrash", "noteToolsDivider" });
-		tile = i.next();
-		noteTopShadow = i.next();
-		noteToolsNotebook = i.next();
-		noteToolsTrash = i.next();
-		noteToolsDivider = i.next();
-	}
-
-	public interface NoteEditorStateListener {
-		public void stateChange(boolean hasFocus, boolean hasSelection);
-	}
-
-	class EditorAttachmentTransferHandler extends AttachmentTransferHandler {
-		public EditorAttachmentTransferHandler(EditorEventListener listener) {
-			super(listener);
-		}
-
-		@Override
-		public boolean canImport(TransferHandler.TransferSupport info) {
-			if (editor.isShowingMarkdown()) {
-				return false;
-			}
-
-			return true;
-		}
-	}
-
 	class EditorWidthImageScaler implements ImageScaler {
 		int adjust = (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) ? -20 : -12;
 
@@ -127,73 +102,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
-	private class DividedPanel extends BackgroundPanel {
-		private static final long serialVersionUID = -7285142017724975923L;
-
-		public DividedPanel(Image i) {
-			super(i);
-		}
-
-		@Override
-		public void paint(Graphics g) {
-			super.paint(g);
-			g.drawImage(noteToolsDivider, 14, 32, getWidth() - 28, 2, null);
-		}
-	}
-
-	private class TopShadowPanel extends JPanel {
-		private static final long serialVersionUID = 6626079564069649611L;
-
-		private final Color lineColor = Color.decode("#b4b4b4");
-
-		@Override
-		public void paint(Graphics g) {
-			super.paint(g);
-
-			JScrollBar v = scroll.getVerticalScrollBar();
-			if (!v.isVisible()) {
-				g.drawImage(noteTopShadow, 0, kNoteOffset + 1, getWidth(), 4, null);
-			} else {
-				if (v.getValue() < 4) {
-					int adjust = scroll.isLocked() ? 0 : kBorder + 1;
-					g.drawImage(noteTopShadow, 0, kNoteOffset + 1, getWidth() - adjust, 4, null);
-				} else {
-					g.drawImage(noteTopShadow, 0, kNoteOffset + 1, getWidth(), 2, null);
-				}
-			}
-
-			g.setColor(lineColor);
-			g.drawLine(0, 0, 0, getHeight());
-		}
-	}
-
-	// Custom panel to fix note editor width to window width.
-	public class ScrollablePanel extends JPanel implements Scrollable {
-		public Dimension getPreferredScrollableViewportSize() {
-			Dimension d = getPreferredSize();
-			if (d.height < kMinNoteSize) {
-				d.height = kMinNoteSize;
-			}
-			return d;
-		}
-
-		public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-			return 10;
-		}
-
-		public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-			return ((orientation == SwingConstants.VERTICAL) ? visibleRect.height : visibleRect.width) - 10;
-		}
-
-		public boolean getScrollableTracksViewportWidth() {
-			return true;
-		}
-
-		public boolean getScrollableTracksViewportHeight() {
-			return false;
-		}
-	}
-
 	public void addStateListener(NoteEditorStateListener l) {
 		stateListener = l;
 	}
@@ -208,9 +116,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private void createComponents() {
-		main = new TopShadowPanel();
-		main.setLayout(null);
-		main.setBorder(BorderFactory.createEmptyBorder(kBorder, kBorder, kBorder, kBorder));
 
 		final DividedPanel tools = new DividedPanel(tile);
 		tools.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
@@ -268,7 +173,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		tools.add(toolsTop, BorderLayout.NORTH);
 		tools.add(toolsBot, BorderLayout.SOUTH);
 
-		main.add(tools);
+
 
 		area = new JPanel();
 		area.setLayout(new GridLayout(1, 1));
@@ -298,26 +203,18 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		scroll.getHorizontalScrollBar().setUnitIncrement(10);
 
 		scrollHolder.add(scroll, BorderLayout.CENTER);
-
+		main = new TopShadowPanel(scroll);
+		main.setLayout(null);
+		main.setBorder(BorderFactory.createEmptyBorder(kBorder, kBorder, kBorder, kBorder));
 		main.add(scrollHolder);
-
+		main.add(tools);
 		add(main, BorderLayout.CENTER);
 
 		caretChanged(editor.getTextPane());
 
-		currNotebook.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openNotebookChooserForMoving();
-			}
-		});
+		currNotebook.addActionListener(e -> openNotebookChooserForMoving());
 
-		trash.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				window.deleteSelectedNote();
-			}
-		});
+		trash.addActionListener(e -> window.deleteSelectedNote());
 
 		addComponentListener(new ResizeListener() {
 			@Override
@@ -372,7 +269,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			}
 		});
 
-		main.setTransferHandler(new EditorAttachmentTransferHandler(this));
+		main.setTransferHandler(new EditorAttachmentTransferHandler(this, editor));
 	}
 
 	private long getUsableEditorWidth() {
@@ -460,7 +357,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			return;
 		}
 
-		System.out.println("move " + n.getMeta().title() + " -> " + destination.name() + " (" + destination.folder() + ")");
+		LOG.info("move " + n.getMeta().title() + " -> " + destination.name() + " (" + destination.folder() + ")");
 
 		n.moveTo(destination.folder());
 
@@ -663,31 +560,29 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	@Override
 	public void caretChanged(final JTextPane text) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				int pos = text.getCaretPosition();
-				int len = text.getDocument().getLength();
+		EventQueue.invokeLater(() -> {
+            int pos = text.getCaretPosition();
+            int len = text.getDocument().getLength();
 
-				// When editor is unfocused, caret should only change when
-				// inserting images/attachments to document during loading.
-				// We want to see the top of note after all loading is done,
-				// so keep vertical scroll bar at 0.
-				//
-				// Only exception to this should be dropping a file,
-				// which can change caret position while editor
-				// is unfocused. editor.maybeImporting() tracks
-				// drag'n'drop state - true indicates a drop might
-				// be in progress, and we need to keep scroll value.
-				if (!editor.isFocusOwner() && !editor.maybeImporting()) {
-					scroll.getVerticalScrollBar().setValue(0);
-				}
+            // When editor is unfocused, caret should only change when
+            // inserting images/attachments to document during loading.
+            // We want to see the top of note after all loading is done,
+            // so keep vertical scroll bar at 0.
+            //
+            // Only exception to this should be dropping a file,
+            // which can change caret position while editor
+            // is unfocused. editor.maybeImporting() tracks
+            // drag'n'drop state - true indicates a drop might
+            // be in progress, and we need to keep scroll value.
+            if (!editor.isFocusOwner() && !editor.maybeImporting()) {
+                scroll.getVerticalScrollBar().setValue(0);
+            }
 
-				// Writing new lines, keep scroll to bottom
-				if (pos == len) {
-					scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
-				}
-			}
-		});
+            // Writing new lines, keep scroll to bottom
+            if (pos == len) {
+                scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
+            }
+        });
 
 		int len = text.getDocument().getLength();
 		int start = text.getSelectionStart(), end = text.getSelectionEnd();

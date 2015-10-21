@@ -1,11 +1,11 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.panel;
 
+import com.pinktwins.elephant.ElephantWindow;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.panel.BackgroundPanel;
 import com.pinktwins.elephant.util.IOUtil;
+import com.pinktwins.elephant.util.Images;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,21 +14,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-public class Start extends BackgroundPanel {
+public class StartPanel extends BackgroundPanel {
 
-	private static final Logger LOG = Logger.getLogger(Start.class.getName());
+	private static final Logger LOG = Logger.getLogger(StartPanel.class.getName());
 
-	static Image tile;
+	static Image tile = Images.loadImage(Images.NOTEBOOKS);
 
-	static {
-		try {
-			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebooks.png"));
-		} catch (IOException e) {
-			LOG.severe("Fail: " + e);
-		}
-	}
-
-	public Start(final Runnable runWhenLocationSet) {
+	public StartPanel(final Runnable runWhenLocationSet) {
 		super(tile);
 
 		setLayout(new FlowLayout());
@@ -62,7 +54,7 @@ public class Start extends BackgroundPanel {
 				ch.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				ch.setMultiSelectionEnabled(false);
 
-				int res = ch.showOpenDialog(Start.this);
+				int res = ch.showOpenDialog(StartPanel.this);
 				if (res == JFileChooser.APPROVE_OPTION) {
 					File f = ch.getSelectedFile();
 					if (f.exists()) {
