@@ -6,15 +6,12 @@ import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.editor.panel.DividedPanel;
-import com.pinktwins.elephant.editor.panel.ScrollablePanel;
-import com.pinktwins.elephant.editor.panel.TopShadowPanel;
+import com.pinktwins.elephant.editor.panel.EditorToolsPanel;
+import com.pinktwins.elephant.editor.panel.NoteEditorsPanel;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.model.AttachmentInfo;
 import com.pinktwins.elephant.panel.BackgroundPanel;
-import com.pinktwins.elephant.panel.CustomScrollPane;
-import com.pinktwins.elephant.panel.TagEditorPane;
 import com.pinktwins.elephant.util.*;
 import org.apache.commons.lang3.SystemUtils;
 import org.pegdown.PegDownProcessor;
@@ -24,8 +21,6 @@ import javax.swing.text.AbstractDocument.LeafElement;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -33,7 +28,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,13 +36,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private static final Logger LOG = Logger.getLogger(NoteEditor.class.getName());
 	public static final int kMinNoteSize = 288;    // TODO move to constatns class
 	private static Image tile = Images.loadImage(Images.NOTE_EDITOR);
-	private static Image noteToolsNotebook = Images.loadImage(Images.NOTE_TOOLS_NOTEBOOK);
-	private static Image noteToolsTrash = Images.loadImage(Images.NOTE_TOOLS_TRASH);
 
 	private ElephantWindow window;
-
 	private boolean isDirty;
-
 	private final int kNoteOffset = 64;
 	private final int kBorder = 14;
 
@@ -56,26 +46,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public EditorWidthImageScaler editorWidthScaler = new EditorWidthImageScaler();
 	public ImageAttachmentImageScaler imageAttachmentImageScaler = new ImageAttachmentImageScaler();
 	public EditorController editorController = new EditorController(this);
-
 	NoteEditorStateListener stateListener;
-
 	private Note currentNote, previousNote;
 	private NoteAttachments attachments = new NoteAttachments();
-
-	JPanel main, area;
-	ScrollablePanel areaHolder;
-	BackgroundPanel scrollHolder;
-	CustomScrollPane scroll;
-	public CustomEditor editor;
-	TagEditorPane tagPane;
-	BackgroundPanel topShadow;
-	JButton currNotebook, trash;
-	JLabel noteCreated, noteUpdated;
-	BorderLayout areaHolderLayout;
+	private NoteEditorsPanel main;
 
 	public static final ImageScalingCache scalingCache = new ImageScalingCache();
-
 	public static final PegDownProcessor pegDown = new PegDownProcessor(org.pegdown.Parser.AUTOLINKS);
+	private EditorToolsPanel tools;
 
 	class EditorWidthImageScaler implements ImageScaler {
 		int adjust = (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) ? -20 : -12;
@@ -116,132 +94,38 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private void createComponents() {
-
-		final DividedPanel tools = new DividedPanel(tile);
-		tools.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
-		tools.setBounds(1, 0, 1920, 65);
-
-		JPanel toolsTop = new JPanel(new BorderLayout());
-		toolsTop.setOpaque(false);
-
-		JPanel toolsTopLeft = new JPanel(new BorderLayout());
-		toolsTopLeft.setOpaque(false);
-
-		JPanel toolsTopRight = new JPanel(new BorderLayout());
-		toolsTopRight.setOpaque(false);
-
-		currNotebook = new JButton("");
-		currNotebook.setBorderPainted(false);
-		currNotebook.setContentAreaFilled(false);
-		currNotebook.setIcon(new ImageIcon(noteToolsNotebook));
-		currNotebook.setForeground(ElephantWindow.colorTitleButton);
-		currNotebook.setFont(ElephantWindow.fontMediumPlus);
-
-		tagPane = new TagEditorPane();
-		tagPane.setEditorEventListener(this);
-
-		trash = new JButton("");
-		trash.setBorderPainted(false);
-		trash.setContentAreaFilled(false);
-		trash.setIcon(new ImageIcon(noteToolsTrash));
-
-		JPanel toolsTopLeftWest = new JPanel(new GridBagLayout());
-		toolsTopLeftWest.setOpaque(false);
-		toolsTopLeftWest.add(currNotebook);
-		toolsTopLeftWest.add(tagPane.getComponent());
-
-		toolsTopLeft.add(toolsTopLeftWest, BorderLayout.WEST);
-		toolsTopRight.add(trash, BorderLayout.EAST);
-		toolsTop.add(toolsTopLeft, BorderLayout.WEST);
-		toolsTop.add(toolsTopRight, BorderLayout.EAST);
-
-		JPanel toolsBot = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-		noteCreated = new JLabel("Created: xxxxxx");
-		noteCreated.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 10));
-		noteCreated.setForeground(ElephantWindow.colorTitleButton);
-		noteCreated.setFont(ElephantWindow.fontMedium);
-
-		noteUpdated = new JLabel("Updated: xxxxxx");
-		noteUpdated.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 20));
-		noteUpdated.setForeground(ElephantWindow.colorTitleButton);
-		noteUpdated.setFont(ElephantWindow.fontMedium);
-
-		toolsBot.add(noteCreated);
-		toolsBot.add(noteUpdated);
-
-		tools.add(toolsTop, BorderLayout.NORTH);
-		tools.add(toolsBot, BorderLayout.SOUTH);
-
-
-
-		area = new JPanel();
-		area.setLayout(new GridLayout(1, 1));
-		area.setBackground(Color.WHITE);
-
-		editor = new CustomEditor();
-		editor.setEditorEventListener(this);
-		area.add(editor);
-		area.setBounds(kBorder, kBorder, 200, kMinNoteSize);
-
-		// Swing when you're winning part #1.
-
-		final int topBorderOffset = 2;
-		areaHolderLayout = new BorderLayout();
-		areaHolder = new ScrollablePanel();
-		areaHolder.setLayout(areaHolderLayout);
-		areaHolder.setBorder(BorderFactory.createEmptyBorder(kBorder - topBorderOffset, kBorder - 1, kBorder, kBorder));
-		areaHolder.add(area, BorderLayout.NORTH);
-
-		scrollHolder = new BackgroundPanel();
-		scrollHolder.setOpaque(false);
-
-		scroll = new CustomScrollPane(areaHolder);
-		scroll.setOpaque(false);
-		scroll.setBorder(ElephantWindow.emptyBorder);
-		scroll.getVerticalScrollBar().setUnitIncrement(10);
-		scroll.getHorizontalScrollBar().setUnitIncrement(10);
-
-		scrollHolder.add(scroll, BorderLayout.CENTER);
-		main = new TopShadowPanel(scroll);
-		main.setLayout(null);
-		main.setBorder(BorderFactory.createEmptyBorder(kBorder, kBorder, kBorder, kBorder));
-		main.add(scrollHolder);
+        tools = new EditorToolsPanel(this);
+        final int topBorderOffset = 2;
+		main = new NoteEditorsPanel(this);
+		editorController.setScroll(main.getScroll());
 		main.add(tools);
 		add(main, BorderLayout.CENTER);
 
-		caretChanged(editor.getTextPane());
-
-		currNotebook.addActionListener(e -> openNotebookChooserForMoving());
-
-		trash.addActionListener(e -> window.deleteSelectedNote());
+		caretChanged(main.getEditor().getTextPane());
 
 		addComponentListener(new ResizeListener() {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				Rectangle mb = main.getBounds();
-				Rectangle ab = area.getBounds();
+				Rectangle ab = main.getEditorPanel().getBounds();
 
 				ab.width = mb.width - kBorder * 2;
-				area.setBounds(ab);
+				main.getEditorPanel().setBounds(ab);
 
-				scrollHolder.setBounds(0, kNoteOffset + topBorderOffset, getWidth(), getHeight() - kNoteOffset - topBorderOffset);
-				areaHolder.setBounds(0, 0, ab.width, ab.height);
+				main.getScrollHolder().setBounds(0, kNoteOffset + topBorderOffset, getWidth(), getHeight() - kNoteOffset - topBorderOffset);
+				main.getAreaHolder().setBounds(0, 0, ab.width, ab.height);
 
 				Rectangle r = tools.getBounds();
 				r.width = getWidth();
 				tools.setBounds(r);
 
-				tagPane.updateWidth(r.width);
+				tools.getTagPane().updateWidth(r.width);
 
 				if (loadAfterLayout != null) {
-					EventQueue.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							_load(loadAfterLayout);
-							loadAfterLayout = null;
-						}
-					});
+					EventQueue.invokeLater(() -> {
+                        _load(loadAfterLayout);
+                        loadAfterLayout = null;
+                    });
 				}
 			}
 		});
@@ -253,23 +137,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			}
 		});
 
-		scroll.addMouseListener(new CustomMouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				unfocus();
-
-				// If we switch out from markdown-editing to rich display,
-				// the unfocus happens too late to actually save edits.
-				// This UIEvent marks a savepoint.
-				new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
-
-				if (currentNote.isMarkdown()) {
-					window.showNote(currentNote);
-				}
-			}
-		});
-
-		main.setTransferHandler(new EditorAttachmentTransferHandler(this, editor));
+		main.setTransferHandler(new EditorAttachmentTransferHandler(this, main.getEditor()));
 	}
 
 	private long getUsableEditorWidth() {
@@ -324,7 +192,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void openNotebookChooserForMoving() {
 		if (currentNote != null) {
-			NotebookChooser nbc = new NotebookChooser(window, String.format("Move \"%s\"", editor.getTitle()));
+			NotebookChooser nbc = new NotebookChooser(window, String.format("Move \"%s\"", main.getEditor().getTitle()));
 
 			// Center on window
 			Point p = main.getLocationOnScreen();
@@ -383,8 +251,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public void clear() {
 		currentNote = null;
 		attachments = new NoteAttachments();
-		editor.saveSelection();
-		editor.clear();
+		main.getEditor().saveSelection();
+		main.getEditor().clear();
 		isDirty = false;
 		visible(false);
 	}
@@ -395,6 +263,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		} else {
 			_load(note);
 		}
+	}
+
+//	todo
+	public CustomEditor getEditor() {
+		return main.getEditor();
 	}
 
 	public void _load(Note note) {
@@ -410,11 +283,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		Meta m = note.getMeta();
 
-		editor.setTitle(m.title());
-		editor.setText(note.contents());
-		editor.setMarkdown(note.isMarkdown());
+		main.getEditor().setTitle(m.title());
+		main.getEditor().setText(note.contents());
+		main.getEditor().setMarkdown(note.isMarkdown());
 
-		tagPane.load(Vault.getInstance().resolveTagIds(m.tags()));
+		tools.getTagPane().load(Vault.getInstance().resolveTagIds(m.tags()));
 
 		List<Note.AttachmentInfo> info = currentNote.getAttachmentList();
 		if (!info.isEmpty()) {
@@ -427,11 +300,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				// If position to insert attachment into would have
 				// component content already, it would be overwritten.
 				// Make sure there is none.
-				AttributeSet as = editor.getAttributes(ap.position);
+				AttributeSet as = main.getEditor().getAttributes(ap.position);
 				if (as instanceof LeafElement) {
 					LeafElement l = (LeafElement) as;
 					if (!"content".equals(l.getName())) {
-						editor.insertNewline(ap.position);
+						main.getEditor().insertNewline(ap.position);
 					}
 				}
 
@@ -441,32 +314,31 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		attachments.loaded();
 
-		editor.discardUndoBuffer();
+		main.getEditor().discardUndoBuffer();
 
 		if (note.isMarkdown()) {
 			String contents = note.contents();
-			String html = pegDown.markdownToHtml(editor.isRichText ? Note.plainTextContents(contents) : contents);
-			editor.displayHtml(currentNote.file(), html);
+			String html = pegDown.markdownToHtml(main.getEditor().isRichText ? Note.plainTextContents(contents) : contents);
+			main.getEditor().displayHtml(currentNote.file(), html);
 		}
 
 		if (note.isHtml()) {
-			editor.displayBrowser(currentNote.file());
+			main.getEditor().displayBrowser(currentNote.file());
 		}
 
 		visible(true);
 
 		Notebook nb = Vault.getInstance().findNotebook(note.file().getParentFile());
-		currNotebook.setText(nb.name());
+		tools.getCurrNotebook().setText(nb.name());
 
-		trash.setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
+		tools.getTrash().setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
 
-		noteCreated.setText("Created: " + note.createdStr());
-		noteUpdated.setText("Updated: " + note.updatedStr());
+		tools.updateNote(note);
 
-		caretChanged(editor.getTextPane());
+		caretChanged(main.getEditor().getTextPane());
 
 		if (previousNote != null && previousNote.equals(note)) {
-			editor.restoreSelection();
+			main.getEditor().restoreSelection();
 		}
 
 		previousNote = currentNote;
@@ -474,12 +346,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private void reloadTags() {
 		Meta m = currentNote.getMeta();
-		tagPane.load(Vault.getInstance().resolveTagIds(m.tags()));
+		tools.getTagPane().load(Vault.getInstance().resolveTagIds(m.tags()));
 	}
 
 	private void reloadDates() {
-		noteCreated.setText("Created: " + currentNote.createdStr());
-		noteUpdated.setText("Updated: " + currentNote.updatedStr());
+		tools.updateNote(currentNote);
 	}
 
 	public void focusQuickLook() {
@@ -497,11 +368,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public boolean hasFocus() {
-		return editor.hasFocus() || tagPane.hasFocus();
+		return main.getEditor().hasFocus() || tools.getTagPane().hasFocus();
 	}
 
 	public void focusTags() {
-		tagPane.requestFocus();
+		tools.getTagPane().requestFocus();
 	}
 
 	public void unfocus() {
@@ -525,27 +396,27 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void saveChanges() {
-		if (!isDirty && !tagPane.isDirty()) {
+		if (!isDirty && !tools.getTagPane().isDirty()) {
 			return;
 		}
 
-		SaveChanges.saveChanges(currentNote, attachments, this, tagPane);
+		SaveChanges.saveChanges(currentNote, attachments, this, tools.getTagPane());
 
 		attachments.loaded();
 		isDirty = false;
 
-		scroll.setLocked(true);
-		scroll.unlockAfter(100);
+		main.getScroll().setLocked(true);
+		main.getScroll().unlockAfter(100);
 
 		reloadDates();
 	}
 
 	public void focusTitle() {
-		editor.focusTitle();
+		main.getEditor().focusTitle();
 	}
 
 	public void focusEditor() {
-		editor.getTextPane().requestFocusInWindow();
+		main.getEditor().getTextPane().requestFocusInWindow();
 	}
 
 	@Override
@@ -574,13 +445,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
             // is unfocused. editor.maybeImporting() tracks
             // drag'n'drop state - true indicates a drop might
             // be in progress, and we need to keep scroll value.
-            if (!editor.isFocusOwner() && !editor.maybeImporting()) {
-                scroll.getVerticalScrollBar().setValue(0);
+            if (!main.getEditor().isFocusOwner() && !main.getEditor().maybeImporting()) {
+				main.getScroll().getVerticalScrollBar().setValue(0);
             }
 
             // Writing new lines, keep scroll to bottom
             if (pos == len) {
-                scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
+				main.getScroll().getVerticalScrollBar().setValue(Integer.MAX_VALUE);
             }
         });
 
@@ -605,7 +476,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 		encName = encName.replace("+", "%20");
 
-		JTextPane tp = editor.getTextPane();
+		JTextPane tp = main.getEditor().getTextPane();
 		try {
 			tp.getDocument().insertString(tp.getCaretPosition(), String.format("%s[%s](%s \"\")\n", isImage ? "!" : "", name, encName), null);
 		} catch (BadLocationException e) {
@@ -615,7 +486,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	@Override
 	public void filesDropped(List<File> files) {
-		JTextPane noteArea = editor.getTextPane();
+		JTextPane noteArea = main.getEditor().getTextPane();
 		for (File f : files) {
 			if (f.isDirectory()) {
 				// XXX directory dropped. what to do? compress and import zip?
@@ -641,30 +512,30 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void cutAction() {
-		editor.getTextPane().cut();
+		main.getEditor().getTextPane().cut();
 	}
 
 	public void copyAction() {
-		editor.getTextPane().copy();
+		main.getEditor().getTextPane().copy();
 	}
 
 	public void pasteAction() {
-		editor.getTextPane().paste();
-		editor.getTextPane().requestFocusInWindow();
+		main.getEditor().getTextPane().paste();
+		main.getEditor().getTextPane().requestFocusInWindow();
 	}
 
 	public void undo() {
-		editor.undo();
+		main.getEditor().undo();
 	}
 
 	public void redo() {
-		editor.redo();
+		main.getEditor().redo();
 	}
 
 	private void turnToPlainText_format() {
-		List<AttachmentInfo> info = editor.getAttachmentInfo();
-		List<AttachmentInfo> info_reverse = editor.removeAttachmentElements(info);
-		editor.turnToPlainText();
+		List<AttachmentInfo> info = main.getEditor().getAttachmentInfo();
+		List<AttachmentInfo> info_reverse = main.getEditor().removeAttachmentElements(info);
+		main.getEditor().turnToPlainText();
 		importAttachments(info_reverse);
 	}
 
@@ -727,5 +598,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void setPreviousNote(Note previousNote) {
 		this.previousNote = previousNote;
+	}
+
+	public ElephantWindow getWindow() {
+		return window;
 	}
 }

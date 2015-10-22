@@ -37,7 +37,7 @@ public class SaveChanges {
 
 	public static void saveChanges(Note currentNote, NoteAttachments attachments, NoteEditor noteEditor, TagEditorPane tagPane) {
 		if (currentNote != null) {
-			CustomEditor editor = noteEditor.editor;
+			CustomEditor editor = noteEditor.getEditor();
 
 			editor.saveSelection();
 

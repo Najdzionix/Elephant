@@ -11,15 +11,15 @@ import java.util.List;
 // or other editing events happened.
 
 public interface EditorEventListener {
-	public void editingFocusGained();
+	 void editingFocusGained();
 
-	public void editingFocusLost();
+	 void editingFocusLost();
 
-	public void caretChanged(JTextPane text);
+	 void caretChanged(JTextPane text);
 
-	public void filesDropped(List<File> files);
+	 void filesDropped(List<File> files);
 
-	public void attachmentClicked(MouseEvent event, Object attachmentObject);
+	 void attachmentClicked(MouseEvent event, Object attachmentObject);
 
-	public void attachmentMoved(AttachmentInfo info);
+	 void attachmentMoved(AttachmentInfo info);
 }

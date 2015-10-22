@@ -2,6 +2,7 @@ package com.pinktwins.elephant.editor;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.*;
+import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.model.AttachmentInfo;
@@ -34,7 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class CustomEditor extends RoundPanel {
+public class CustomEditor extends RoundPanel implements Editable{
 
     private static final Logger LOG = Logger.getLogger(CustomEditor.class.getName());
 
@@ -265,7 +266,7 @@ public class CustomEditor extends RoundPanel {
         titlePanel.add(title, BorderLayout.CENTER);
 
         title.setText("");
-//        add(new MyHtmlEditor(), BorderLayout.NORTH);
+//        add(new HtmlNoteEditor(), BorderLayout.NORTH);
 		add(titlePanel, BorderLayout.NORTH);
 
         createNote();
@@ -576,12 +577,22 @@ public class CustomEditor extends RoundPanel {
         return title.getText();
     }
 
+    @Override
+    public void load(Note note) {
+
+    }
+
     public String getText() throws BadLocationException {
         Document doc = note.getDocument();
         String plain = doc.getText(0, doc.getLength());
         String rtf = RtfUtil.getRtf(doc);
 
         return rtf != null && rtf.length() > 0 && isRichText ? rtf : plain;
+    }
+
+    @Override
+    public Note getNote() {
+        return null;
     }
 
     public void clear() {

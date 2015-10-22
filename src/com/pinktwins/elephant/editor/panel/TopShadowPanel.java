@@ -22,6 +22,8 @@ public class TopShadowPanel extends JPanel {
 
     public TopShadowPanel(CustomScrollPane scroll) {
         this.scroll = scroll;
+        setLayout(null);
+        setBorder(BorderFactory.createEmptyBorder(kBorder, kBorder, kBorder, kBorder));
     }
 
     @Override

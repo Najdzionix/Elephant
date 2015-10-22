@@ -39,12 +39,12 @@ public class NoteAttachments {
 		attachments.remove(o);
 	}
 
-	public void insertFileIntoNote(NoteEditor editor, File f, int position) {
-		if (editor.getWidth() <= 0) {
+	public void insertFileIntoNote(NoteEditor noteEditor, File f, int position) {
+		if (noteEditor.getWidth() <= 0) {
 			throw new AssertionError();
 		}
 
-		JTextPane notePane = editor.editor.getTextPane();
+		JTextPane notePane = noteEditor.getEditor().getTextPane();
 
 		int caret = notePane.getCaretPosition();
 
@@ -52,12 +52,12 @@ public class NoteAttachments {
 			try {
 				Image i = null;
 
-				i = editor.imageAttachmentImageScaler.getCachedScale(f);
+				i = noteEditor.imageAttachmentImageScaler.getCachedScale(f);
 
 				if (i == null) {
 					i = ImageIO.read(f);
 					if (i != null) {
-						i = editor.imageAttachmentImageScaler.scale(i, f);
+						i = noteEditor.imageAttachmentImageScaler.scale(i, f);
 					}
 				}
 
@@ -82,7 +82,7 @@ public class NoteAttachments {
 				LOG.severe("Fail: " + e);
 			}
 		} else {
-			FileAttachment aa = new FileAttachment(f, editor.editorWidthScaler, editor.editorController);
+			FileAttachment aa = new FileAttachment(f, noteEditor.editorWidthScaler, noteEditor.editorController);
 
 			notePane.setCaretPosition(position);
 			notePane.insertComponent(aa);

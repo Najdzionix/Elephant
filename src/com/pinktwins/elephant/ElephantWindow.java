@@ -6,6 +6,7 @@ import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.editor.NoteEditor;
+import com.pinktwins.elephant.editor.panel.NoteEditorsPanel;
 import com.pinktwins.elephant.eventbus.*;
 import com.pinktwins.elephant.panel.CustomSplitPane;
 import com.pinktwins.elephant.panel.StartPanel;
@@ -56,6 +57,7 @@ public class ElephantWindow extends JFrame {
 	private final Sidebar sideBar = new Sidebar(this);
 	private final NoteList noteList = new NoteList(this);
 	private final NoteEditor noteEditor = new NoteEditor(this);
+//	private final NoteEditorsPanel noteEditorsPanel = new NoteEditorsPanel(this);
 	private final MultipleNotes multipleNotes = new MultipleNotes(this);
 	private final Notebooks notebooks = new Notebooks(this);
 	private final TagList tagList = new TagList(this);
@@ -193,7 +195,7 @@ public class ElephantWindow extends JFrame {
 
 	ActionListener pasteTextAction = e -> noteEditor.pasteAction();
 
-	ActionListener editTitleAction = e -> noteEditor.editor.focusTitle();
+	ActionListener editTitleAction = e -> noteEditor.getEditor().focusTitle();
 
 	ActionListener editTagsAction = e -> noteEditor.focusTags();
 
@@ -662,7 +664,9 @@ public class ElephantWindow extends JFrame {
 
 	public void showNote(Note note) {
 		showNotes();
+
 		splitRight.setRightComponent(noteEditor);
+//		splitRight.setRightComponent(noteEditorsPanel);
 		refreshNote(note);
 		if (!toolBar.isEditing()) {
 			noteEditor.focusQuickLook();
@@ -672,6 +676,8 @@ public class ElephantWindow extends JFrame {
 	public void refreshNote(Note note) {
 		noteEditor.clear();
 		noteEditor.load(note);
+//		noteEditorsPanel.load(note);
+//		noteEditorsPanel.changeEditor(note);
 	}
 
 	public void showMultipleNotes() {
