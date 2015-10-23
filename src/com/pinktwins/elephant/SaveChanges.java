@@ -73,7 +73,7 @@ public class SaveChanges {
 				}
 
 				// Fetch attachment info
-				List<AttachmentInfo> info = editor.getAttachmentInfo();
+				List<AttachmentInfo> info = editor.getAttachmentsInfo();
 
 				// Check which attachments were removed
 				Set<Object> remainingAttachments = attachments.keySet();

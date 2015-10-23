@@ -35,24 +35,6 @@ public class Note implements Comparable<Note> {
 
 	private static File[] emptyFileList = new File[0];
 
-	public interface Meta {
-		public String title();
-
-		public long created();
-
-		public void title(String newTitle);
-
-		public void setCreatedTime();
-
-		public int getAttachmentPosition(File attachment);
-
-		public void setAttachmentPosition(File attachment, int position);
-
-		public List<String> tags();
-
-		public void setTags(List<String> tagIds, List<String> tagNames);
-	}
-
 	public class AttachmentInfo implements Comparable<AttachmentInfo> {
 		public File f;
 		public int position;

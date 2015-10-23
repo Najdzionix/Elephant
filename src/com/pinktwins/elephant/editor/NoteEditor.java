@@ -3,7 +3,7 @@ package com.pinktwins.elephant.editor;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.*;
 import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.data.Meta;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.editor.panel.EditorToolsPanel;
@@ -35,7 +35,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private static final Logger LOG = Logger.getLogger(NoteEditor.class.getName());
 	public static final int kMinNoteSize = 288;    // TODO move to constatns class
-	private static Image tile = Images.loadImage(Images.NOTE_EDITOR);
+	private static Image NOTE_BACKGROUND = Images.loadImage(Images.NOTE_EDITOR);
 
 	private ElephantWindow window;
 	private boolean isDirty;
@@ -85,7 +85,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public NoteEditor(ElephantWindow w) {
-		super(tile);
+		super(NOTE_BACKGROUND);
 		window = w;
 
 		Elephant.eventBus.register(this);
@@ -300,11 +300,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				// If position to insert attachment into would have
 				// component content already, it would be overwritten.
 				// Make sure there is none.
-				AttributeSet as = main.getEditor().getAttributes(ap.position);
+				AttributeSet as = main.getEditor().getDocAttributes(ap.position);
 				if (as instanceof LeafElement) {
 					LeafElement l = (LeafElement) as;
 					if (!"content".equals(l.getName())) {
-						main.getEditor().insertNewline(ap.position);
+						main.getEditor().getCustomTextPane().insertNewline(ap.position);
 					}
 				}
 
@@ -533,7 +533,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private void turnToPlainText_format() {
-		List<AttachmentInfo> info = main.getEditor().getAttachmentInfo();
+		List<AttachmentInfo> info = main.getEditor().getAttachmentsInfo();
 		List<AttachmentInfo> info_reverse = main.getEditor().removeAttachmentElements(info);
 		main.getEditor().turnToPlainText();
 		importAttachments(info_reverse);

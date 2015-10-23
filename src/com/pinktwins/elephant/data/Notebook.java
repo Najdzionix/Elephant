@@ -1,6 +1,6 @@
 package com.pinktwins.elephant.data;
 
-import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.data.Meta;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;

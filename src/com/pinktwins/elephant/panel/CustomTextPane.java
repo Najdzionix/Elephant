@@ -16,7 +16,6 @@ import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.io.*;
-import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -88,6 +87,10 @@ public class CustomTextPane extends JTextPane implements ClipboardOwner {
         }
 
         return result;
+    }
+
+    public CustomDocument getCustomDocument() {
+        return (CustomDocument) this.getDocument();
     }
 
     private class CPPInfo {
@@ -216,6 +219,14 @@ public class CustomTextPane extends JTextPane implements ClipboardOwner {
             } catch (BadLocationException e) {
                 LOG.severe("Fail: " + e);
             }
+        }
+    }
+
+    public void insertNewline(int position) {
+        try {
+            getDocument().insertString(position, "\n", null);
+        } catch (BadLocationException e) {
+            LOG.severe("Fail: " + e);
         }
     }
 

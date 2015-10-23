@@ -3,9 +3,6 @@ package com.pinktwins.elephant.editor;
 import com.pinktwins.elephant.panel.CustomTextPane;
 
 import javax.swing.text.BadLocationException;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledEditorKit;
 import java.util.logging.Logger;
 
 /**
@@ -15,7 +12,7 @@ import java.util.logging.Logger;
 public class MarkdownEditor {
     private static final Logger LOG = Logger.getLogger(MarkdownEditor.class.getName());
 
-    public static void markdownStyleCommand(String codeStart, String codeEnd,CustomTextPane textPane) {
+    public static void markdownStyleCommand(String codeStart, String codeEnd, CustomTextPane textPane) {
         int lenStart = codeStart.length();
         int lenEnd = codeEnd.length();
 
@@ -45,7 +42,8 @@ public class MarkdownEditor {
             }
         }
     }
-     //TODO does not work
+
+    //TODO does not work
     public static void shiftFontSize(final int delta, CustomTextPane textPane) {
         try {
             String s = textPane.getText(0, textPane.getCaretPosition());

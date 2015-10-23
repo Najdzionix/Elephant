@@ -214,7 +214,7 @@ public class Vault implements WatchDirListener {
 
 		// Remove tag from notes
 		for (Note n : nb.notes) {
-			Note.Meta m = n.getMeta();
+			Meta m = n.getMeta();
 			List<String> ids = m.tags();
 			List<String> names = resolveTagIds(ids);
 

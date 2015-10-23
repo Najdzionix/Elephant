@@ -2,7 +2,7 @@ package com.pinktwins.elephant.data;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
-import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.data.Meta;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.SearchIndexChangedEvent;

@@ -29,6 +29,8 @@ public class Images {
 	public static final String NOTE_EDITOR = "noteeditor";
 	public static final String NOTE_TOOLS_NOTEBOOK = "noteToolsNotebook";
 	public static final String NOTE_TOOLS_TRASH = "noteToolsTrash";
+	public static final String DRAG_HAND = "dragHand";
+	public static final String DRAG_FILE = "dragFile";
 
 
 

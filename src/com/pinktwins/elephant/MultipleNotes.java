@@ -1,7 +1,7 @@
 package com.pinktwins.elephant;
 
 import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.data.Meta;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.model.AttachmentInfo;

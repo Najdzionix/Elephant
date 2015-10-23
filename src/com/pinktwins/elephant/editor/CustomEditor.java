@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class CustomEditor extends RoundPanel implements Editable{
+public class CustomEditor extends RoundPanel implements Editable {
 
     private static final Logger LOG = Logger.getLogger(CustomEditor.class.getName());
 
@@ -55,84 +55,9 @@ public class CustomEditor extends RoundPanel implements Editable{
 
     final Color kDividerColor = Color.decode("#dbdbdb");
 
-    private final FocusListener editorFocusListener = new FocusListener() {
-        @Override
-        public void focusGained(FocusEvent e) {
-            if (eeListener != null) {
-                eeListener.editingFocusGained();
-            }
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-            if (eeListener != null) {
-                eeListener.editingFocusLost();
-            }
-        }
-    };
     private AbstractAction increaseFontSizeAction, decreaseFontSizeAction;
-
-    public boolean isMarkdown() {
-        return isMarkdown;
-    }
-
-    public boolean isRichText() {
-        return isRichText;
-    }
-
-    public void setIsRichText(boolean isRichText) {
-        this.isRichText = isRichText;
-    }
-
     private AbstractAction boldAction, italicAction, underlineAction;
-
-    private final AbstractAction strikethroughAction = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (!isMarkdown) {
-                StyledEditorKit kit = (StyledEditorKit) customTextPane.getEditorKit();
-                MutableAttributeSet as = kit.getInputAttributes();
-                boolean b = (StyleConstants.isStrikeThrough(as)) ? false : true;
-                StyleConstants.setStrikeThrough(as, b);
-                customTextPane.setCharacterAttributes(as, false);
-
-                isRichText = true;
-            } else {
-                 MarkdownEditor.markdownStyleCommand("<strike>", "</strike>", (CustomTextPane) e.getSource());
-            }
-        }
-    };
-
-    // Rearrange lines based on strikethrough. ST lines will 'fall' to bottom of document.
-    private final AbstractAction strikethroughRearrangeAction = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent event) {
-            if (isRichText) {
-                try {
-                    Document doc = customTextPane.getDocument();
-                    int pos = doc.getLength() - 1;
-                    int insertPoint = pos;
-
-                    for (; pos >= 0; pos--) {
-                        String s = doc.getText(pos > 0 ? pos - 1 : pos, 1);
-                        if ("\n".equals(s) || pos == 0) {
-                            AttributeSet as = getAttributes(pos);
-                            if (StyleConstants.isStrikeThrough(as)) {
-                                s = doc.getText(pos, doc.getLength() - pos).split("\n")[0];
-                                int len = s.length();
-                                doc.insertString(insertPoint, "\n", null);
-                                doc.insertString(insertPoint, s, as);
-                                doc.remove(pos > 0 ? pos - 1 : pos, len + 1);
-                                insertPoint -= len + 1;
-                            }
-                        }
-                    }
-                } catch (BadLocationException e) {
-                    LOG.severe("Fail: " + e);
-                }
-            }
-        }
-    };
+    private AbstractAction strikethroughAction, strikethroughRearrangeAction;
 
     private EditorEventListener eeListener;
     private NoteAttachmentTransferHandler attachmentTransferHandler;
@@ -160,17 +85,21 @@ public class CustomEditor extends RoundPanel implements Editable{
         }
     };
 
-    public void setMarkdown(boolean b) {
-        isMarkdown = b;
-    }
+    private final FocusListener editorFocusListener = new FocusListener() {
+        @Override
+        public void focusGained(FocusEvent e) {
+            if (eeListener != null) {
+                eeListener.editingFocusGained();
+            }
+        }
 
-    public boolean maybeImporting() {
-        return maybeImporting;
-    }
-
-    public JTextPane getTextPane() {
-        return customTextPane;
-    }
+        @Override
+        public void focusLost(FocusEvent e) {
+            if (eeListener != null) {
+                eeListener.editingFocusLost();
+            }
+        }
+    };
 
     public void setEditorEventListener(EditorEventListener l) {
         eeListener = l;
@@ -224,7 +153,7 @@ public class CustomEditor extends RoundPanel implements Editable{
 
         title.setText("");
 //        add(new HtmlNoteEditor(), BorderLayout.NORTH);
-		add(titlePanel, BorderLayout.NORTH);
+        add(titlePanel, BorderLayout.NORTH);
 
         createNote();
 
@@ -262,24 +191,17 @@ public class CustomEditor extends RoundPanel implements Editable{
     }
 
     private void registerActions() {
-        boldAction = EditorActionFactory.createAction("**", this, new StyledEditorKit.BoldAction());
-        italicAction = EditorActionFactory.createAction("_", this, new StyledEditorKit.ItalicAction());
-        underlineAction = EditorActionFactory.createAction("<u>", "</u>", this, new StyledEditorKit.UnderlineAction());
-        increaseFontSizeAction = EditorActionFactory.createAction(1, this);
-        decreaseFontSizeAction = EditorActionFactory.createAction(-1, this);
-
+        boldAction = EditorActionFactory.createShiftFontSizeAction("**", this, new StyledEditorKit.BoldAction());
+        italicAction = EditorActionFactory.createShiftFontSizeAction("_", this, new StyledEditorKit.ItalicAction());
+        underlineAction = EditorActionFactory.createShiftFontSizeAction("<u>", "</u>", this, new StyledEditorKit.UnderlineAction());
+        increaseFontSizeAction = EditorActionFactory.createShiftFontSizeAction(1, this);
+        decreaseFontSizeAction = EditorActionFactory.createShiftFontSizeAction(-1, this);
+        strikethroughAction = EditorActionFactory.createStrikethroughAction(this);
+        strikethroughRearrangeAction = EditorActionFactory.createStrikethroughRearrangeAction(this);
     }
 
-    void insertNewline(int position) {
-        try {
-            customTextPane.getDocument().insertString(position, "\n", null);
-        } catch (BadLocationException e) {
-            LOG.severe("Fail: " + e);
-        }
-    }
-
-    public AttributeSet getAttributes(int position) {
-        return ((CustomDocument) customTextPane.getDocument()).getCharacterElement(position).getAttributes();
+    public AttributeSet getDocAttributes(int position) {
+        return customTextPane.getCustomDocument().getAttributeSetByPosition(position);
     }
 
     private void createNote() {
@@ -331,7 +253,7 @@ public class CustomEditor extends RoundPanel implements Editable{
 
         customTextPane.getDocument().addUndoableEditListener(new UndoEditListener());
 
-        customTextPane.addMouseListener(new AttachmentDragMouseListener(this, customTextPane) {
+        customTextPane.addMouseListener(new AttachmentDragMouseListener(customTextPane) {
             @Override
             public void mouseClicked(MouseEvent event) {
                 if (eeListener != null && attachmentObject != null) {
@@ -381,38 +303,7 @@ public class CustomEditor extends RoundPanel implements Editable{
         if (customTextPane != null && frozenSelectionStart != frozenSelectionEnd) {
             customTextPane.setSelectionStart(frozenSelectionStart);
             customTextPane.setSelectionEnd(frozenSelectionEnd);
-            ((DefaultCaret) customTextPane.getCaret()).setSelectionVisible(true);
-        }
-    }
-
-    private void markdownStyleCommand(String codeStart, String codeEnd) {
-        int lenStart = codeStart.length();
-        int lenEnd = codeEnd.length();
-
-        if (customTextPane.getSelectionStart() == customTextPane.getSelectionEnd()) {
-            try {
-                customTextPane.getDocument().insertString(customTextPane.getCaretPosition(), codeStart + codeEnd, null);
-                customTextPane.setCaretPosition(customTextPane.getCaretPosition() - lenEnd);
-            } catch (BadLocationException e) {
-                LOG.severe("Fail: " + e);
-            }
-        } else {
-            try {
-                int codeEnding = Math.max(customTextPane.getSelectionStart() + lenStart, customTextPane.getSelectionEnd());
-                boolean codeCouldFit = codeEnding < customTextPane.getDocument().getLength();
-
-                if (codeCouldFit && customTextPane.getText(customTextPane.getSelectionStart(), lenStart).equals(codeStart)
-                        && customTextPane.getText(customTextPane.getSelectionEnd() - lenEnd, lenEnd).equals(codeEnd)) {
-                    customTextPane.getDocument().remove(customTextPane.getSelectionEnd() - lenEnd, lenEnd);
-                    customTextPane.getDocument().remove(customTextPane.getSelectionStart(), lenStart);
-                } else {
-                    customTextPane.getDocument().insertString(customTextPane.getSelectionEnd(), codeEnd, null);
-                    customTextPane.getDocument().insertString(customTextPane.getSelectionStart(), codeStart, null);
-                    customTextPane.setSelectionStart(customTextPane.getSelectionStart() - lenStart);
-                }
-            } catch (BadLocationException e) {
-                LOG.severe("Fail: " + e);
-            }
+            (customTextPane.getCaret()).setSelectionVisible(true);
         }
     }
 
@@ -552,7 +443,7 @@ public class CustomEditor extends RoundPanel implements Editable{
         title.requestFocusInWindow();
     }
 
-    public List<AttachmentInfo> getAttachmentInfo() {
+    public List<AttachmentInfo> getAttachmentsInfo() {
         List<AttachmentInfo> list = Factory.newArrayList();
 
         ElementIterator iterator = new ElementIterator(customTextPane.getDocument());
@@ -688,4 +579,29 @@ public class CustomEditor extends RoundPanel implements Editable{
     public CustomTextPane getCustomTextPane() {
         return customTextPane;
     }
+
+    public boolean isMarkdown() {
+        return isMarkdown;
+    }
+
+    public boolean isRichText() {
+        return isRichText;
+    }
+
+    public void setIsRichText(boolean isRichText) {
+        this.isRichText = isRichText;
+    }
+
+    public void setMarkdown(boolean b) {
+        isMarkdown = b;
+    }
+
+    public boolean maybeImporting() {
+        return maybeImporting;
+    }
+
+    public JTextPane getTextPane() {
+        return customTextPane;
+    }
+
 }
