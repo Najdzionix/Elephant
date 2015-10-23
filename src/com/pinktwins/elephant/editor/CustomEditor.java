@@ -18,8 +18,6 @@ import com.pinktwins.elephant.ui.TabAction;
 import com.pinktwins.elephant.util.*;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.*;
@@ -44,7 +42,7 @@ public class CustomEditor extends RoundPanel implements Editable{
     public static final String COMP = StyleConstants.ComponentElementName;
 
     private JTextField title;
-    private CustomTextPane note;
+    private CustomTextPane customTextPane;
     private HtmlPane htmlPane;
     private BrowserPane browserPane;
     private JPanel padding;
@@ -72,62 +70,35 @@ public class CustomEditor extends RoundPanel implements Editable{
             }
         }
     };
+    private AbstractAction increaseFontSizeAction, decreaseFontSizeAction;
 
-    private final AbstractAction boldAction = new AbstractAction() {
-        StyledEditorKit.BoldAction a = new StyledEditorKit.BoldAction();
+    public boolean isMarkdown() {
+        return isMarkdown;
+    }
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (!isMarkdown) {
-                isRichText = true;
-                a.actionPerformed(e);
-            } else {
-                markdownStyleCommand("**", "**");
-            }
-        }
-    };
+    public boolean isRichText() {
+        return isRichText;
+    }
 
-    private final AbstractAction italicAction = new AbstractAction() {
-        StyledEditorKit.ItalicAction a = new StyledEditorKit.ItalicAction();
+    public void setIsRichText(boolean isRichText) {
+        this.isRichText = isRichText;
+    }
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (!isMarkdown) {
-                isRichText = true;
-                a.actionPerformed(e);
-            } else {
-                markdownStyleCommand("_", "_");
-            }
-        }
-    };
-
-    private final AbstractAction underlineAction = new AbstractAction() {
-        StyledEditorKit.UnderlineAction a = new StyledEditorKit.UnderlineAction();
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (!isMarkdown) {
-                isRichText = true;
-                a.actionPerformed(e);
-            } else {
-                markdownStyleCommand("<u>", "</u>");
-            }
-        }
-    };
+    private AbstractAction boldAction, italicAction, underlineAction;
 
     private final AbstractAction strikethroughAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (!isMarkdown) {
-                StyledEditorKit kit = (StyledEditorKit) note.getEditorKit();
+                StyledEditorKit kit = (StyledEditorKit) customTextPane.getEditorKit();
                 MutableAttributeSet as = kit.getInputAttributes();
                 boolean b = (StyleConstants.isStrikeThrough(as)) ? false : true;
                 StyleConstants.setStrikeThrough(as, b);
-                note.setCharacterAttributes(as, false);
+                customTextPane.setCharacterAttributes(as, false);
 
                 isRichText = true;
             } else {
-                markdownStyleCommand("<strike>", "</strike>");
+                 MarkdownEditor.markdownStyleCommand("<strike>", "</strike>", (CustomTextPane) e.getSource());
             }
         }
     };
@@ -138,7 +109,7 @@ public class CustomEditor extends RoundPanel implements Editable{
         public void actionPerformed(ActionEvent event) {
             if (isRichText) {
                 try {
-                    Document doc = note.getDocument();
+                    Document doc = customTextPane.getDocument();
                     int pos = doc.getLength() - 1;
                     int insertPoint = pos;
 
@@ -160,20 +131,6 @@ public class CustomEditor extends RoundPanel implements Editable{
                     LOG.severe("Fail: " + e);
                 }
             }
-        }
-    };
-
-    private final AbstractAction increaseFontSizeAction = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            shiftFontSize(1);
-        }
-    };
-
-    private final AbstractAction decreaseFontSizeAction = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            shiftFontSize(-1);
         }
     };
 
@@ -199,7 +156,7 @@ public class CustomEditor extends RoundPanel implements Editable{
     private final CustomMouseListener paddingClick = new CustomMouseListener() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            note.requestFocusInWindow();
+            customTextPane.requestFocusInWindow();
         }
     };
 
@@ -212,7 +169,7 @@ public class CustomEditor extends RoundPanel implements Editable{
     }
 
     public JTextPane getTextPane() {
-        return note;
+        return customTextPane;
     }
 
     public void setEditorEventListener(EditorEventListener l) {
@@ -301,24 +258,34 @@ public class CustomEditor extends RoundPanel implements Editable{
                 }
             }
         });
+        registerActions();
+    }
+
+    private void registerActions() {
+        boldAction = EditorActionFactory.createAction("**", this, new StyledEditorKit.BoldAction());
+        italicAction = EditorActionFactory.createAction("_", this, new StyledEditorKit.ItalicAction());
+        underlineAction = EditorActionFactory.createAction("<u>", "</u>", this, new StyledEditorKit.UnderlineAction());
+        increaseFontSizeAction = EditorActionFactory.createAction(1, this);
+        decreaseFontSizeAction = EditorActionFactory.createAction(-1, this);
+
     }
 
     void insertNewline(int position) {
         try {
-            note.getDocument().insertString(position, "\n", null);
+            customTextPane.getDocument().insertString(position, "\n", null);
         } catch (BadLocationException e) {
             LOG.severe("Fail: " + e);
         }
     }
 
     public AttributeSet getAttributes(int position) {
-        return ((CustomDocument) note.getDocument()).getCharacterElement(position).getAttributes();
+        return ((CustomDocument) customTextPane.getDocument()).getCharacterElement(position).getAttributes();
     }
 
     private void createNote() {
 
-        if (note != null) {
-            remove(note);
+        if (customTextPane != null) {
+            remove(customTextPane);
         }
 
         if (htmlPane != null) {
@@ -331,40 +298,40 @@ public class CustomEditor extends RoundPanel implements Editable{
             browserPane.clear();
         }
 
-        note = new CustomTextPane(this);
-        note.setDocument(new CustomDocument());
-        note.addFocusListener(editorFocusListener);
-        note.setFont(ElephantWindow.fontEditor);
-        note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
-        note.setDragEnabled(true);
+        customTextPane = new CustomTextPane(this);
+        customTextPane.setDocument(new CustomDocument());
+        customTextPane.addFocusListener(editorFocusListener);
+        customTextPane.setFont(ElephantWindow.fontEditor);
+        customTextPane.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+        customTextPane.setDragEnabled(true);
 
         // enable AutoIndent as described at http://www.jroller.com/santhosh/entry/autoindent_for_jtextarea
         if (Elephant.settings.getAutoBullet()) {
-            note.registerKeyboardAction(new AutoIndentAction(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
+            customTextPane.registerKeyboardAction(new AutoIndentAction(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
         }
 
         // enable Tab and Shift-Tab behavior for bullet lists
-        note.registerKeyboardAction(new TabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), JComponent.WHEN_FOCUSED);
-        note.registerKeyboardAction(new ShiftTabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, java.awt.event.InputEvent.SHIFT_DOWN_MASK),
+        customTextPane.registerKeyboardAction(new TabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), JComponent.WHEN_FOCUSED);
+        customTextPane.registerKeyboardAction(new ShiftTabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, java.awt.event.InputEvent.SHIFT_DOWN_MASK),
                 JComponent.WHEN_FOCUSED);
 
-        note.registerKeyboardAction(new HomeAction(), KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), JComponent.WHEN_FOCUSED);
+        customTextPane.registerKeyboardAction(new HomeAction(), KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), JComponent.WHEN_FOCUSED);
 
         maybeImporting = false;
 
-        note.setTransferHandler(attachmentTransferHandler);
+        customTextPane.setTransferHandler(attachmentTransferHandler);
 
-        note.setCaret(new SelectionPreservingCaret());
+        customTextPane.setCaret(new SelectionPreservingCaret());
 
-        note.addCaretListener(e -> {
+        customTextPane.addCaretListener(e -> {
             if (eeListener != null) {
-                eeListener.caretChanged(note);
+                eeListener.caretChanged(customTextPane);
             }
         });
 
-        note.getDocument().addUndoableEditListener(new UndoEditListener());
+        customTextPane.getDocument().addUndoableEditListener(new UndoEditListener());
 
-        note.addMouseListener(new AttachmentDragMouseListener(this, note) {
+        customTextPane.addMouseListener(new AttachmentDragMouseListener(this, customTextPane) {
             @Override
             public void mouseClicked(MouseEvent event) {
                 if (eeListener != null && attachmentObject != null) {
@@ -380,7 +347,7 @@ public class CustomEditor extends RoundPanel implements Editable{
             }
         });
 
-        InputMap inputMap = note.getInputMap();
+        InputMap inputMap = customTextPane.getInputMap();
 
         KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_B, ElephantWindow.menuMask);
         inputMap.put(ks, boldAction);
@@ -398,23 +365,23 @@ public class CustomEditor extends RoundPanel implements Editable{
         ks = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ElephantWindow.menuMask);
         inputMap.put(ks, decreaseFontSizeAction);
 
-        add(note, BorderLayout.CENTER);
+        add(customTextPane, BorderLayout.CENTER);
 
         createPadding();
     }
 
     public void saveSelection() {
-        if (note != null) {
-            frozenSelectionStart = note.getSelectionStart();
-            frozenSelectionEnd = note.getSelectionEnd();
+        if (customTextPane != null) {
+            frozenSelectionStart = customTextPane.getSelectionStart();
+            frozenSelectionEnd = customTextPane.getSelectionEnd();
         }
     }
 
     public void restoreSelection() {
-        if (note != null && frozenSelectionStart != frozenSelectionEnd) {
-            note.setSelectionStart(frozenSelectionStart);
-            note.setSelectionEnd(frozenSelectionEnd);
-            ((DefaultCaret) note.getCaret()).setSelectionVisible(true);
+        if (customTextPane != null && frozenSelectionStart != frozenSelectionEnd) {
+            customTextPane.setSelectionStart(frozenSelectionStart);
+            customTextPane.setSelectionEnd(frozenSelectionEnd);
+            ((DefaultCaret) customTextPane.getCaret()).setSelectionVisible(true);
         }
     }
 
@@ -422,58 +389,26 @@ public class CustomEditor extends RoundPanel implements Editable{
         int lenStart = codeStart.length();
         int lenEnd = codeEnd.length();
 
-        if (note.getSelectionStart() == note.getSelectionEnd()) {
+        if (customTextPane.getSelectionStart() == customTextPane.getSelectionEnd()) {
             try {
-                note.getDocument().insertString(note.getCaretPosition(), codeStart + codeEnd, null);
-                note.setCaretPosition(note.getCaretPosition() - lenEnd);
+                customTextPane.getDocument().insertString(customTextPane.getCaretPosition(), codeStart + codeEnd, null);
+                customTextPane.setCaretPosition(customTextPane.getCaretPosition() - lenEnd);
             } catch (BadLocationException e) {
                 LOG.severe("Fail: " + e);
             }
         } else {
             try {
-                int codeEnding = Math.max(note.getSelectionStart() + lenStart, note.getSelectionEnd());
-                boolean codeCouldFit = codeEnding < note.getDocument().getLength();
+                int codeEnding = Math.max(customTextPane.getSelectionStart() + lenStart, customTextPane.getSelectionEnd());
+                boolean codeCouldFit = codeEnding < customTextPane.getDocument().getLength();
 
-                if (codeCouldFit && note.getText(note.getSelectionStart(), lenStart).equals(codeStart)
-                        && note.getText(note.getSelectionEnd() - lenEnd, lenEnd).equals(codeEnd)) {
-                    note.getDocument().remove(note.getSelectionEnd() - lenEnd, lenEnd);
-                    note.getDocument().remove(note.getSelectionStart(), lenStart);
+                if (codeCouldFit && customTextPane.getText(customTextPane.getSelectionStart(), lenStart).equals(codeStart)
+                        && customTextPane.getText(customTextPane.getSelectionEnd() - lenEnd, lenEnd).equals(codeEnd)) {
+                    customTextPane.getDocument().remove(customTextPane.getSelectionEnd() - lenEnd, lenEnd);
+                    customTextPane.getDocument().remove(customTextPane.getSelectionStart(), lenStart);
                 } else {
-                    note.getDocument().insertString(note.getSelectionEnd(), codeEnd, null);
-                    note.getDocument().insertString(note.getSelectionStart(), codeStart, null);
-                    note.setSelectionStart(note.getSelectionStart() - lenStart);
-                }
-            } catch (BadLocationException e) {
-                LOG.severe("Fail: " + e);
-            }
-        }
-    }
-
-    private void shiftFontSize(final int delta) {
-        if (!isMarkdown) {
-            StyledEditorKit kit = (StyledEditorKit) note.getEditorKit();
-            MutableAttributeSet as = kit.getInputAttributes();
-            int size = StyleConstants.getFontSize(as);
-            StyleConstants.setFontSize(as, size + delta);
-            note.setCharacterAttributes(as, false);
-
-            isRichText = true;
-        } else {
-            try {
-                String s = note.getText(0, note.getCaretPosition());
-                int lastLf = s.lastIndexOf("\n");
-                if (lastLf == -1) {
-                    lastLf = 0;
-                } else {
-                    lastLf++;
-                }
-                if (delta > 0) {
-                    note.getDocument().insertString(lastLf, "#", null);
-                } else {
-                    System.out.println(lastLf);
-                    if (s.length() > lastLf && s.charAt(lastLf) == '#') {
-                        note.getDocument().remove(lastLf, 1);
-                    }
+                    customTextPane.getDocument().insertString(customTextPane.getSelectionEnd(), codeEnd, null);
+                    customTextPane.getDocument().insertString(customTextPane.getSelectionStart(), codeStart, null);
+                    customTextPane.setSelectionStart(customTextPane.getSelectionStart() - lenStart);
                 }
             } catch (BadLocationException e) {
                 LOG.severe("Fail: " + e);
@@ -514,8 +449,8 @@ public class CustomEditor extends RoundPanel implements Editable{
     }
 
     public void turnToPlainText() {
-        note.getStyledDocument().setCharacterAttributes(0, note.getDocument().getLength(), new SimpleAttributeSet(), true);
-        note.requestFocusInWindow();
+        customTextPane.getStyledDocument().setCharacterAttributes(0, customTextPane.getDocument().getLength(), new SimpleAttributeSet(), true);
+        customTextPane.requestFocusInWindow();
         isRichText = false;
     }
 
@@ -566,11 +501,11 @@ public class CustomEditor extends RoundPanel implements Editable{
     }
 
     public void setText(String s) {
-        note.setText("");
+        customTextPane.setText("");
 
-        isRichText = setTextRtfOrPlain(note, s);
+        isRichText = setTextRtfOrPlain(customTextPane, s);
 
-        note.setCaretPosition(0);
+        customTextPane.setCaretPosition(0);
     }
 
     public String getTitle() {
@@ -583,7 +518,7 @@ public class CustomEditor extends RoundPanel implements Editable{
     }
 
     public String getText() throws BadLocationException {
-        Document doc = note.getDocument();
+        Document doc = customTextPane.getDocument();
         String plain = doc.getText(0, doc.getLength());
         String rtf = RtfUtil.getRtf(doc);
 
@@ -604,12 +539,12 @@ public class CustomEditor extends RoundPanel implements Editable{
     }
 
     public boolean hasFocus() {
-        return note.hasFocus() || title.hasFocus();
+        return customTextPane.hasFocus() || title.hasFocus();
     }
 
     public void initialFocus() {
-        note.setCaretPosition(0);
-        note.requestFocusInWindow();
+        customTextPane.setCaretPosition(0);
+        customTextPane.requestFocusInWindow();
     }
 
     public void focusTitle() {
@@ -620,7 +555,7 @@ public class CustomEditor extends RoundPanel implements Editable{
     public List<AttachmentInfo> getAttachmentInfo() {
         List<AttachmentInfo> list = Factory.newArrayList();
 
-        ElementIterator iterator = new ElementIterator(note.getDocument());
+        ElementIterator iterator = new ElementIterator(customTextPane.getDocument());
         Element element;
         while ((element = iterator.next()) != null) {
             AttributeSet as = element.getAttributes();
@@ -708,7 +643,7 @@ public class CustomEditor extends RoundPanel implements Editable{
                     // Executed when mouseClick does not open a link
                     // -> go to edit mode
                     CustomEditor.this.remove(htmlPane);
-                    CustomEditor.this.add(note, BorderLayout.CENTER);
+                    CustomEditor.this.add(customTextPane, BorderLayout.CENTER);
                     CustomEditor.this.revalidate();
 
                     htmlPane = null;
@@ -718,7 +653,7 @@ public class CustomEditor extends RoundPanel implements Editable{
 
         htmlPane.setText(html);
 
-        remove(note);
+        remove(customTextPane);
         add(htmlPane, BorderLayout.CENTER);
     }
 
@@ -742,11 +677,15 @@ public class CustomEditor extends RoundPanel implements Editable{
             URL url = noteFile.toURI().toURL();
             browserPane.loadURL(url.toExternalForm());
 
-            remove(note);
+            remove(customTextPane);
             add(browserPane, BorderLayout.CENTER);
         } catch (MalformedURLException e) {
             LOG.severe("Fail: " + e);
             clear();
         }
+    }
+
+    public CustomTextPane getCustomTextPane() {
+        return customTextPane;
     }
 }

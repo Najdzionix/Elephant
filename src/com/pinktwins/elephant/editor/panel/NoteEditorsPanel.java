@@ -50,16 +50,15 @@ public class NoteEditorsPanel extends JPanel {
     }
 
     private void createPanels() {
-        editorPanel = new JPanel();
-        editorPanel.setLayout(new GridLayout(1, 1));
-        editorPanel.setBackground(Color.WHITE);
+        loadEditors();
+//        editorPanel = new JPanel();
+//        editorPanel.setLayout(new GridLayout(1, 1));
+//        editorPanel.setBackground(Color.WHITE);
 
-        editor = new CustomEditor();
-        editor.setEditorEventListener(noteEditor);
-        editorPanel.add(editor);
+//        editor = new CustomEditor();
+//        editor.setEditorEventListener(noteEditor);
+//        editorPanel.add(editor);
         editorPanel.setBounds(kBorder, kBorder, 200, kMinNoteSize);
-
-        // Swing when you're winning part #1.
 
         final int topBorderOffset = 2;
         areaHolderLayout = new BorderLayout();
@@ -128,8 +127,9 @@ public class NoteEditorsPanel extends JPanel {
         editorPanel.setBackground(Color.WHITE);
 
         JPanel htmlEditor = new HtmlNoteEditor();
-        JPanel oldEditor = new JPanel();
-        oldEditor.add(new JLabel("test"));
+        CustomEditor oldEditor = new CustomEditor();
+        editor = oldEditor;
+        oldEditor.setEditorEventListener(noteEditor);
         editorPanel.add(htmlEditor, "HTML");
         editorPanel.add(oldEditor, "OLD");
         CardLayout cl = (CardLayout) (editorPanel.getLayout());
