@@ -2,6 +2,7 @@ package com.pinktwins.elephant.editor;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.*;
+import com.pinktwins.elephant.data.AttachmentInfo2;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
@@ -407,6 +408,46 @@ public class CustomEditor extends RoundPanel implements Editable {
     public void load(Note note) {
 
     }
+
+    public void reload(Note note) {
+        setTitle(note.getMeta().title());
+        setText(note.contents());
+        setMarkdown(note.isMarkdown());
+        loadAttachments(note.getAttachmentList());
+        discardUndoBuffer();
+
+        if (note.isMarkdown()) {
+            String contents = note.contents();
+            String html = MarkdownEditor.markdownToHtml(isRichText() ? Note.plainTextContents(contents) : contents);
+            displayHtml(note.file(), html);
+        }
+
+        if (note.isHtml()) {
+            displayBrowser(note.file());
+        }
+
+    }
+
+    private void loadAttachments(List<AttachmentInfo2> info) {
+        if (!info.isEmpty()) {
+            // We need to insert attachments from end to start - thus, sort.
+            Collections.reverse(info);
+            for (AttachmentInfo2 ap : info) {
+
+                // If position to insert attachment into would have
+                // component content already, it would be overwritten.
+                // Make sure there is none.
+                AttributeSet as = getDocAttributes(ap.position);
+                if (as instanceof AbstractDocument.LeafElement) {
+                    AbstractDocument.LeafElement l = (AbstractDocument.LeafElement) as;
+                    if (!"content".equals(l.getName())) {
+                        getCustomTextPane().insertNewline(ap.position);
+                    }
+                }
+            }
+        }
+    }
+
 
     public String getText() throws BadLocationException {
         Document doc = customTextPane.getDocument();

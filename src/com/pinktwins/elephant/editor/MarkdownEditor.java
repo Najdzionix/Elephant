@@ -1,6 +1,7 @@
 package com.pinktwins.elephant.editor;
 
 import com.pinktwins.elephant.panel.CustomTextPane;
+import org.pegdown.PegDownProcessor;
 
 import javax.swing.text.BadLocationException;
 import java.util.logging.Logger;
@@ -11,6 +12,7 @@ import java.util.logging.Logger;
  */
 public class MarkdownEditor {
     private static final Logger LOG = Logger.getLogger(MarkdownEditor.class.getName());
+    public static final PegDownProcessor PEG_DOWN_PROCESSOR = new PegDownProcessor(org.pegdown.Parser.AUTOLINKS);
 
     public static void markdownStyleCommand(String codeStart, String codeEnd, CustomTextPane textPane) {
         int lenStart = codeStart.length();
@@ -41,6 +43,10 @@ public class MarkdownEditor {
                 LOG.severe("Fail: " + e);
             }
         }
+    }
+
+    public static String markdownToHtml(String content) {
+        return PEG_DOWN_PROCESSOR.markdownToHtml(content);
     }
 
     //TODO does not work

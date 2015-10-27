@@ -21,7 +21,7 @@ import java.util.TimerTask;
 public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> extends BackgroundPanel {
 
 	interface ToolbarListItem {
-		public void setSelected(boolean b);
+		void setSelected(boolean b);
 	}
 
 	protected List<T> itemList = Factory.newArrayList();

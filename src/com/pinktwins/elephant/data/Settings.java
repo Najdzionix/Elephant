@@ -13,7 +13,7 @@ public class Settings {
 
 	private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 
-	public static enum Keys {
+	public enum Keys {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet");
 
 		private final String str;
@@ -26,7 +26,7 @@ public class Settings {
 		public String toString() {
 			return str;
 		}
-	};
+	}
 
 	private String homeDir;
 	private JSONObject map;
@@ -96,7 +96,7 @@ public class Settings {
 
 	public Settings setChain(String key, int value) {
 		try {
-			map.put(key.toString(), value);
+			map.put(key, value);
 		} catch (JSONException e) {
 			LOG.severe("Fail: " + e);
 		}
@@ -109,7 +109,7 @@ public class Settings {
 
 	public Settings setChain(String key, String value) {
 		try {
-			map.put(key.toString(), value);
+			map.put(key, value);
 		} catch (JSONException e) {
 			LOG.severe("Fail: " + e);
 		}
@@ -119,9 +119,7 @@ public class Settings {
 	private void save() {
 		try {
 			IOUtil.writeFile(settingsFile(), map.toString(4));
-		} catch (IOException e) {
-			LOG.severe("Fail: " + e);
-		} catch (JSONException e) {
+		} catch (IOException | JSONException e) {
 			LOG.severe("Fail: " + e);
 		}
 	}
@@ -146,9 +144,6 @@ public class Settings {
 	}
 
 	public boolean getAutoBullet() {
-		if (!has(Keys.AUTOBULLET)) {
-			return true;
-		}
-		return getInt(Keys.AUTOBULLET) > 0;
+		return !has(Keys.AUTOBULLET) || getInt(Keys.AUTOBULLET) > 0;
 	}
 }

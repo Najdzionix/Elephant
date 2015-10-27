@@ -2,6 +2,8 @@ package com.pinktwins.elephant.editor.panel;
 
 import com.pinktwins.elephant.ElephantWindow;
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.editor.NoteEditor;
 import com.pinktwins.elephant.editor.UIComponentFactory;
 import com.pinktwins.elephant.panel.BackgroundPanel;
@@ -95,6 +97,12 @@ public class EditorToolsPanel extends BackgroundPanel {
     public void updateNote(Note note) {
         noteCreated.setText("Created: " + note.createdStr());
         noteUpdated.setText("Updated: " + note.updatedStr());
+        getTagPane().load(Vault.getInstance().resolveTagIds(note.getMeta().tags()));
+        Notebook nb = Vault.getInstance().findNotebook(note.file().getParentFile());
+        getCurrNotebook().setText(nb.name());
+
+        getTrash().setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
+
     }
 
     public TagEditorPane getTagPane() {

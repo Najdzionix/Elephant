@@ -25,18 +25,17 @@ public class NoteEditorsPanel extends JPanel {
 
     private static final Logger logger = Logger.getLogger(NoteEditorsPanel.class.getName());
     private static Image NOTE_TOP_SHADOW = Images.loadImage(Images.NOTE_TOP_SHADOW);
-    private final int kNoteOffset = 64;
-    private final Color lineColor = Color.decode("#b4b4b4");
-    private Map<NoteEditorType, Editable> editors;
-    //TODO ?
-    private final int kBorder = 14;
+    private static final int kNoteOffset = 64;
+    private static final int kMinNoteSize = 288;
+    private static final int kBorder = 14;
+    private static final Color lineColor = Color.decode("#b4b4b4");
 
+    private Map<NoteEditorType, Editable> editors;
     private NoteEditor noteEditor;
     private JPanel editorPanel;
     private ScrollablePanel areaHolder;
     private BorderLayout areaHolderLayout;
     private BackgroundPanel scrollHolder;
-    private int kMinNoteSize = 288;
     private CustomScrollPane scroll;
     private CustomEditor editor;
 

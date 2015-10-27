@@ -1,5 +1,6 @@
 package com.pinktwins.elephant.data;
 
+import com.pinktwins.elephant.editor.NoteEditorType;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
@@ -28,63 +29,46 @@ public class Note implements Comparable<Note> {
 
 	private File file, meta;
 	private String fileName = "";
-
+	private NoteEditorType noteType;
 	private boolean saveLocked = false;
 
 	private static DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
 
 	private static File[] emptyFileList = new File[0];
 
-	public class AttachmentInfo implements Comparable<AttachmentInfo> {
-		public File f;
-		public int position;
+	private static final NoteBoundDirectory[] boundDirs = {
+			Note::attachmentFolderPath,
+			Note::resourceFolderPath,
+			Note::filesFolderPath
+	};
 
-		public AttachmentInfo(File f, int position) {
-			this.f = f;
-			this.position = position;
-		}
+	public Note(File f) {
+		file = f;
+		meta = metaFromFile(f);
 
-		@Override
-		public boolean equals(Object o) {
-			return super.equals(o);
-		}
+		String s = f.getName().toLowerCase();
+		boolean editable = s.endsWith(".txt") || s.endsWith(".rtf") || s.endsWith(".md");
 
-		@Override
-		public int compareTo(AttachmentInfo o) {
-			return position - o.position;
-		}
+		saveLocked = !editable;
 
-		@Override
-		public int hashCode() {
-			return super.hashCode();
-		}
+		readInfo();
+		recognizeTypeNote();
 	}
 
-	interface NoteBoundDirectory {
-		public String getPath(File noteFile);
+	public Note(File f, NoteEditorType type) {
+		this(f);
+		noteType = type;
 	}
 
-	private static final NoteBoundDirectory[] boundDirs = { new NoteBoundDirectory() {
-		@Override
-		public String getPath(File noteFile) {
-			return attachmentFolderPath(noteFile);
-		}
-	},
-
-	new NoteBoundDirectory() {
-		@Override
-		public String getPath(File noteFile) {
-			return resourceFolderPath(noteFile);
-		}
-	},
-
-	new NoteBoundDirectory() {
-		@Override
-		public String getPath(File noteFile) {
-			return filesFolderPath(noteFile);
-		}
-	} };
-
+	private void recognizeTypeNote()  {
+	  if(isMarkdown()) {
+		  noteType = NoteEditorType.MARKDOWN;
+	  } else if(isHtml()){
+		  noteType = NoteEditorType.HTMLOLD;
+	  } else {
+		  noteType = NoteEditorType.OLD;
+	  }
+	}
 	@Override
 	public boolean equals(Object o) {
 		if (o == null) {
@@ -128,18 +112,6 @@ public class Note implements Comparable<Note> {
 		File m = new File(Vault.getInstance().getHome().getAbsolutePath() + File.separator + ".meta" + File.separator + flatPath);
 		m.getParentFile().mkdirs();
 		return m;
-	}
-
-	public Note(File f) {
-		file = f;
-		meta = metaFromFile(f);
-
-		String s = f.getName().toLowerCase();
-		boolean editable = s.endsWith(".txt") || s.endsWith(".rtf") || s.endsWith(".md");
-
-		saveLocked = !editable;
-
-		readInfo();
 	}
 
 	public static Notebook findContainingNotebook(File f) {
@@ -212,9 +184,7 @@ public class Note implements Comparable<Note> {
 		try {
 			RtfUtil.putRtf(doc, contents, 0);
 			return doc.getText(0, doc.getLength());
-		} catch (IOException e) {
-			LOG.severe("Fail: " + e);
-		} catch (BadLocationException e) {
+		} catch (IOException | BadLocationException e) {
 			LOG.severe("Fail: " + e);
 		}
 
@@ -236,7 +206,7 @@ public class Note implements Comparable<Note> {
 	public Map<String, String> getMetaMap() {
 		try {
 			String json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
-			if (json == null || json.isEmpty()) {
+			if (json.isEmpty()) {
 				return Collections.emptyMap();
 			}
 
@@ -262,16 +232,14 @@ public class Note implements Comparable<Note> {
 	private void setMeta(String key, String value) {
 		try {
 			String json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
-			if (json == null || json.isEmpty()) {
+			if (json.isEmpty()) {
 				json = "{}";
 			}
 
 			JSONObject o = new JSONObject(json);
 			o.put(key, value);
 			IOUtil.writeFile(meta, o.toString(4));
-		} catch (JSONException e) {
-			LOG.severe("Fail: " + e);
-		} catch (IOException e) {
+		} catch (JSONException | IOException e) {
 			LOG.severe("Fail: " + e);
 		}
 	}
@@ -546,8 +514,8 @@ public class Note implements Comparable<Note> {
 		}
 	}
 
-	public List<AttachmentInfo> getAttachmentList() {
-		List<AttachmentInfo> info = new ArrayList<AttachmentInfo>();
+	public List<AttachmentInfo2> getAttachmentList() {
+		List<AttachmentInfo2> info = new ArrayList<AttachmentInfo2>();
 
 		File[] files = getAttachmentFiles();
 		if (files != null) {
@@ -555,7 +523,7 @@ public class Note implements Comparable<Note> {
 			for (File f : files) {
 				if (f.getName().charAt(0) != '.' && f.isFile()) {
 					int position = m.getAttachmentPosition(f);
-					info.add(new AttachmentInfo(f, position));
+					info.add(new AttachmentInfo2(f, position));
 				}
 			}
 			Collections.sort(info);
@@ -586,5 +554,13 @@ public class Note implements Comparable<Note> {
 			LOG.severe("Fail: " + e);
 		}
 		return "";
+	}
+
+	public NoteEditorType getNoteType() {
+		return noteType;
+	}
+
+	public void setNoteType(NoteEditorType noteType) {
+		this.noteType = noteType;
 	}
 }

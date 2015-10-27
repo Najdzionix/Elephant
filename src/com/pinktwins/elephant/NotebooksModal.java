@@ -226,7 +226,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 		}
 	}
 
-	private static enum SpecialItems {
+	private enum SpecialItems {
 		NONE(""), ALL_NOTES("All Notes");
 
 		private final String label;

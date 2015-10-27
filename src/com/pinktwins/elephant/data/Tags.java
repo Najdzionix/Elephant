@@ -67,9 +67,7 @@ public class Tags {
 		try {
 			o.put("tags", arr);
 			IOUtil.writeFile(new File(fileLoaded), o.toString(4));
-		} catch (JSONException e) {
-			LOG.severe("Fail: " + e);
-		} catch (IOException e) {
+		} catch (JSONException | IOException e) {
 			LOG.severe("Fail: " + e);
 		}
 	}

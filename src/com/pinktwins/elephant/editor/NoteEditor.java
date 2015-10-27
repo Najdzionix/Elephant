@@ -2,23 +2,21 @@ package com.pinktwins.elephant.editor;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.*;
-import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.Meta;
-import com.pinktwins.elephant.data.Notebook;
-import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.data.*;
 import com.pinktwins.elephant.editor.panel.EditorToolsPanel;
 import com.pinktwins.elephant.editor.panel.NoteEditorsPanel;
+import com.pinktwins.elephant.editor.scaler.EditorWidthImageScaler;
+import com.pinktwins.elephant.editor.scaler.ImageAttachmentImageScaler;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.model.AttachmentInfo;
 import com.pinktwins.elephant.panel.BackgroundPanel;
-import com.pinktwins.elephant.util.*;
-import org.apache.commons.lang3.SystemUtils;
-import org.pegdown.PegDownProcessor;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.LaunchUtil;
+import com.pinktwins.elephant.util.ResizeListener;
 
 import javax.swing.*;
-import javax.swing.text.AbstractDocument.LeafElement;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
@@ -43,42 +41,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private final int kBorder = 14;
 
 	private Note loadAfterLayout = null;
-	public EditorWidthImageScaler editorWidthScaler = new EditorWidthImageScaler();
-	public ImageAttachmentImageScaler imageAttachmentImageScaler = new ImageAttachmentImageScaler();
-	public EditorController editorController = new EditorController(this);
-	NoteEditorStateListener stateListener;
+	private EditorWidthImageScaler editorWidthScaler;
+	private ImageAttachmentImageScaler imageAttachmentImageScaler;
+	public EditorController editorController;
+	private NoteEditorStateListener stateListener;
 	private Note currentNote, previousNote;
 	private NoteAttachments attachments = new NoteAttachments();
 	private NoteEditorsPanel main;
-
-	public static final ImageScalingCache scalingCache = new ImageScalingCache();
-	public static final PegDownProcessor pegDown = new PegDownProcessor(org.pegdown.Parser.AUTOLINKS);
 	private EditorToolsPanel tools;
-
-	class EditorWidthImageScaler implements ImageScaler {
-		int adjust = (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) ? -20 : -12;
-
-		@Override
-		public Image scale(Image i, File source) {
-			return getScaledImage(i, source, adjust, true);
-		}
-
-		@Override
-		public Image getCachedScale(File source) {
-			return getScaledImageCacheOnly(source, adjust, true);
-		}
-	}
-
-	public class ImageAttachmentImageScaler implements ImageScaler {
-		public Image scale(Image i, File source) {
-			return getScaledImage(i, source, 0, false);
-		}
-
-		@Override
-		public Image getCachedScale(File source) {
-			return getScaledImageCacheOnly(source, 0, false);
-		}
-	}
 
 	public void addStateListener(NoteEditorStateListener l) {
 		stateListener = l;
@@ -89,6 +59,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		window = w;
 
 		Elephant.eventBus.register(this);
+
+		editorController = new EditorController(this);
+		editorWidthScaler = new EditorWidthImageScaler(this);
+		imageAttachmentImageScaler = new ImageAttachmentImageScaler(this);
 
 		createComponents();
 	}
@@ -140,54 +114,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		main.setTransferHandler(new EditorAttachmentTransferHandler(this, main.getEditor()));
 	}
 
-	private long getUsableEditorWidth() {
+	public long getUsableEditorWidth() {
 		return getWidth() - kBorder * 4 - 12;
-	}
-
-	private Image getScaledImageCacheOnly(File sourceFile, int widthOffset, boolean useFullWidth) {
-		SimpleImageInfo info;
-		try {
-			info = new SimpleImageInfo(sourceFile);
-		} catch (IOException e) {
-			LOG.severe("Fail: " + e);
-			return null;
-		}
-
-		long w = getUsableEditorWidth() + widthOffset;
-		long iw = info.getWidth();
-
-		if (useFullWidth || iw > w) {
-			float f = w / (float) iw;
-			int scaledWidth = (int) (f * (float) iw);
-			int scaledHeight = (int) (f * (float) info.getHeight());
-
-			return scalingCache.get(sourceFile, scaledWidth, scaledHeight);
-		}
-
-		return null;
-	}
-
-	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
-		long w = getUsableEditorWidth() + widthOffset;
-		long iw = i.getWidth(null);
-
-		if (useFullWidth || iw > w) {
-			float f = w / (float) iw;
-			int scaledWidth = (int) (f * (float) iw);
-			int scaledHeight = (int) (f * (float) i.getHeight(null));
-
-			Image cached = scalingCache.get(sourceFile, scaledWidth, scaledHeight);
-			if (cached != null) {
-				return cached;
-			}
-
-			Image img = i.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_AREA_AVERAGING);
-			scalingCache.put(sourceFile, scaledWidth, scaledHeight, img);
-
-			return img;
-		} else {
-			return i;
-		}
 	}
 
 	public void openNotebookChooserForMoving() {
@@ -279,60 +207,17 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 
 		currentNote = note;
+		main.getEditor().reload(note);
 		attachments = new NoteAttachments();
-
-		Meta m = note.getMeta();
-
-		main.getEditor().setTitle(m.title());
-		main.getEditor().setText(note.contents());
-		main.getEditor().setMarkdown(note.isMarkdown());
-
-		tools.getTagPane().load(Vault.getInstance().resolveTagIds(m.tags()));
-
-		List<Note.AttachmentInfo> info = currentNote.getAttachmentList();
+		List<AttachmentInfo2> info = currentNote.getAttachmentList();
 		if (!info.isEmpty()) {
-
 			// We need to insert attachments from end to start - thus, sort.
 			Collections.reverse(info);
-
-			for (Note.AttachmentInfo ap : info) {
-
-				// If position to insert attachment into would have
-				// component content already, it would be overwritten.
-				// Make sure there is none.
-				AttributeSet as = main.getEditor().getDocAttributes(ap.position);
-				if (as instanceof LeafElement) {
-					LeafElement l = (LeafElement) as;
-					if (!"content".equals(l.getName())) {
-						main.getEditor().getCustomTextPane().insertNewline(ap.position);
-					}
-				}
-
-				attachments.insertFileIntoNote(this, ap.f, ap.position);
-			}
+			info.stream().forEach(ap -> attachments.insertFileIntoNote(this, ap.f, ap.position));
 		}
 
 		attachments.loaded();
-
-		main.getEditor().discardUndoBuffer();
-
-		if (note.isMarkdown()) {
-			String contents = note.contents();
-			String html = pegDown.markdownToHtml(main.getEditor().isRichText ? Note.plainTextContents(contents) : contents);
-			main.getEditor().displayHtml(currentNote.file(), html);
-		}
-
-		if (note.isHtml()) {
-			main.getEditor().displayBrowser(currentNote.file());
-		}
-
 		visible(true);
-
-		Notebook nb = Vault.getInstance().findNotebook(note.file().getParentFile());
-		tools.getCurrNotebook().setText(nb.name());
-
-		tools.getTrash().setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
-
 		tools.updateNote(note);
 
 		caretChanged(main.getEditor().getTextPane());
@@ -603,4 +488,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public ElephantWindow getWindow() {
 		return window;
 	}
+
+	public EditorWidthImageScaler getEditorWidthScaler() {
+		return editorWidthScaler;
+	}
+
+	public ImageAttachmentImageScaler getImageAttachmentImageScaler() {
+		return imageAttachmentImageScaler;
+	}
+
+
 }

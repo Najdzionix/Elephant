@@ -1,12 +1,12 @@
 package com.pinktwins.elephant;
 
-import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Meta;
+import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.model.AttachmentInfo;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
+import com.pinktwins.elephant.model.AttachmentInfo;
 import com.pinktwins.elephant.panel.BackgroundPanel;
 import com.pinktwins.elephant.panel.TagEditorPane;
 import com.pinktwins.elephant.util.Factory;
@@ -21,7 +21,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 

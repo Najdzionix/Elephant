@@ -77,7 +77,7 @@ public class Shortcuts implements SideBarItemModifier {
 				if (oldPath.equals(fullShortcut)) {
 					String newPath = event.dest.getAbsolutePath();
 					newPath = newPath.replace(prefix, "");
-					list.remove(n);
+					list.remove(n);   //error we can not delete elements form list
 					list.add(n, newPath);
 					modified = true;
 				}
@@ -105,9 +105,7 @@ public class Shortcuts implements SideBarItemModifier {
 		try {
 			o.put("list", arr);
 			IOUtil.writeFile(shortcutsFile(), o.toString(4));
-		} catch (JSONException e) {
-			LOG.severe("Fail: " + e);
-		} catch (IOException e) {
+		} catch (JSONException | IOException e) {
 			LOG.severe("Fail: " + e);
 		}
 	}

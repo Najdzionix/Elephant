@@ -52,12 +52,12 @@ public class NoteAttachments {
 			try {
 				Image i = null;
 
-				i = noteEditor.imageAttachmentImageScaler.getCachedScale(f);
+				i = noteEditor.getImageAttachmentImageScaler().getCachedScale(f);
 
 				if (i == null) {
 					i = ImageIO.read(f);
 					if (i != null) {
-						i = noteEditor.imageAttachmentImageScaler.scale(i, f);
+						i = noteEditor.getImageAttachmentImageScaler().scale(i, f);
 					}
 				}
 
@@ -82,7 +82,7 @@ public class NoteAttachments {
 				LOG.severe("Fail: " + e);
 			}
 		} else {
-			FileAttachment aa = new FileAttachment(f, noteEditor.editorWidthScaler, noteEditor.editorController);
+			FileAttachment aa = new FileAttachment(f, noteEditor.getEditorWidthScaler(), noteEditor.editorController);
 
 			notePane.setCaretPosition(position);
 			notePane.insertComponent(aa);

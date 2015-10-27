@@ -1,8 +1,10 @@
 package com.pinktwins.elephant;
 
+import com.pinktwins.elephant.data.AttachmentInfo2;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.editor.CustomEditor;
-import com.pinktwins.elephant.editor.NoteEditor;
+import com.pinktwins.elephant.editor.MarkdownEditor;
+import com.pinktwins.elephant.editor.scaler.ScalerService;
 import com.pinktwins.elephant.panel.BackgroundPanel;
 import com.pinktwins.elephant.panel.HtmlPane;
 import com.pinktwins.elephant.util.Factory;
@@ -137,8 +139,7 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		preview.addMouseListener(this);
 
 		if (note.isMarkdown()) {
-			String contents = note.contents();
-			String html = NoteEditor.pegDown.markdownToHtml(contents);
+			String html = MarkdownEditor.markdownToHtml(note.contents());
 			// hint by http://stackoverflow.com/a/19785465/873282
 			preview.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 			preview.setText(html);
@@ -180,7 +181,7 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		previewPane.add(preview);
 
 		// Picture thumbnail.
-		for (Note.AttachmentInfo i : note.getAttachmentList()) {
+		for (AttachmentInfo2 i : note.getAttachmentList()) {
 			String ext = FilenameUtils.getExtension(i.f.getAbsolutePath()).toLowerCase();
 
 			if (Images.isImage(i.f)) {
@@ -240,12 +241,12 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 				throw new AssertionError();
 			}
 
-			Image scaled = NoteEditor.scalingCache.get(f, w, h);
+			Image scaled = ScalerService.getScalingCache().get(f, w, h);
 			if (scaled == null) {
 				Image i = ImageIO.read(f);
 				if (i != null) {
 					scaled = i.getScaledInstance(w, h, Image.SCALE_AREA_AVERAGING);
-					NoteEditor.scalingCache.put(f, w, h, scaled);
+					ScalerService.getScalingCache().put(f, w, h, scaled);
 				}
 			}
 
