@@ -1,17 +1,16 @@
 package com.pinktwins.elephant.editor.panel;
 
 import com.pinktwins.elephant.ElephantWindow;
+import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.editor.*;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.panel.BackgroundPanel;
 import com.pinktwins.elephant.panel.CustomScrollPane;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Images;
-import com.pinktwins.elephant.util.ResizeListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +37,8 @@ public class NoteEditorsPanel extends JPanel {
     private BackgroundPanel scrollHolder;
     private CustomScrollPane scroll;
     private CustomEditor editor;
+    private HtmlNoteEditor htmlEditor;
+    private NoteEditorType activeEditorType;
 
     public NoteEditorsPanel(NoteEditor noteEditor) {
         this.noteEditor = noteEditor;
@@ -50,13 +51,6 @@ public class NoteEditorsPanel extends JPanel {
 
     private void createPanels() {
         loadEditors();
-//        editorPanel = new JPanel();
-//        editorPanel.setLayout(new GridLayout(1, 1));
-//        editorPanel.setBackground(Color.WHITE);
-
-//        editor = new CustomEditor();
-//        editor.setEditorEventListener(noteEditor);
-//        editorPanel.add(editor);
         editorPanel.setBounds(kBorder, kBorder, 200, kMinNoteSize);
 
         final int topBorderOffset = 2;
@@ -122,17 +116,36 @@ public class NoteEditorsPanel extends JPanel {
 //        editors.put(NoteEditorType.OLD, new CustomEditor());
         //todo rest editor load
         editorPanel = new JPanel();
-        editorPanel.setLayout(new CardLayout());
+        editorPanel.setLayout(new BorderLayout());
         editorPanel.setBackground(Color.WHITE);
 
-        JPanel htmlEditor = new HtmlNoteEditor();
         CustomEditor oldEditor = new CustomEditor();
         editor = oldEditor;
         oldEditor.setEditorEventListener(noteEditor);
-        editorPanel.add(htmlEditor, "HTML");
-        editorPanel.add(oldEditor, "OLD");
-        CardLayout cl = (CardLayout) (editorPanel.getLayout());
-        cl.show(editorPanel, "OLD");
+//        showEditor(NoteEditorType.HTML);
+
+    }
+
+    public void showEditor(Note note) {
+//        CardLayout cl = (CardLayout) (editorPanel.getLayout());
+        editorPanel.removeAll();
+        activeEditorType = note.getNoteType();
+        if (note.getNoteType() == NoteEditorType.HTML) {
+            htmlEditor = new HtmlNoteEditor(note);
+           editorPanel.add(htmlEditor, BorderLayout.CENTER);
+        } else {
+            editorPanel.add(editor, BorderLayout.CENTER);
+            editor.reload(note);
+        }
+
+    }
+
+    public String getNoteFromEditor() {
+        if(activeEditorType == NoteEditorType.HTML) {
+            System.out.println(htmlEditor.getText());
+            return  htmlEditor.getText();
+        }
+        return "";
     }
 
     public JPanel getEditorPanel() {

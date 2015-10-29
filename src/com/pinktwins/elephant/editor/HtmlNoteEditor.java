@@ -5,6 +5,8 @@ import com.sun.javafx.application.PlatformImpl;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.web.HTMLEditor;
 
 import javax.swing.*;
@@ -20,8 +22,8 @@ public class HtmlNoteEditor extends JPanel implements Editable{
     private JButton swingButton;
     private HTMLEditor htmlEditor;
     private Note note;
-    public HtmlNoteEditor() {
-
+    public HtmlNoteEditor(Note note) {
+        this.note = note;
         initComponents();
     }
 
@@ -59,7 +61,7 @@ public class HtmlNoteEditor extends JPanel implements Editable{
 
 
                         htmlEditor = new HTMLEditor();
-                        htmlEditor.setHtmlText("Welcome in HtmlNoteEditor:)");
+                        htmlEditor.setHtmlText(note.contents());
                         htmlEditor.setPrefHeight(245);
                         htmlEditor.setStyle(
                                 "-fx-font: 12 cambria;"
@@ -67,6 +69,7 @@ public class HtmlNoteEditor extends JPanel implements Editable{
                                         + "-fx-border-style: dotted;"
                                         + "-fx-border-width: 2;"
                         );
+                        javafx.scene.control.Button b = new Button("TTTTTT");
                         Scene scene = new Scene(htmlEditor, javafx.scene.paint.Color.ALICEBLUE);
                         jfxPanel.setScene(scene);
 //                        jfxPanel.setScene(scene);
@@ -80,6 +83,15 @@ public class HtmlNoteEditor extends JPanel implements Editable{
     @Override
     public void load(Note note) {
        this.note = note;
+
+//        jfxPanel.revalidate();
+//        jfxPanel.getScene().getRoot().setVisible(true);
+//        jfxPanel.getScene().getRoot().requestLayout();;
+//        if(htmlEditor != null) {
+//            System.out.println("tttttt  t ");
+//            htmlEditor.setVisible(true);
+//            htmlEditor.requestLayout();
+//        }
 //        htmlEditor.setHtmlText(note.contents());
     }
 

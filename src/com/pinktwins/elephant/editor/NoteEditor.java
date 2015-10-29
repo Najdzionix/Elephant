@@ -207,7 +207,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 
 		currentNote = note;
-		main.getEditor().reload(note);
+		main.showEditor(note);
+//		main.getEditor().reload(note);
 		attachments = new NoteAttachments();
 		List<AttachmentInfo2> info = currentNote.getAttachmentList();
 		if (!info.isEmpty()) {
@@ -281,10 +282,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void saveChanges() {
-		if (!isDirty && !tools.getTagPane().isDirty()) {
-			return;
-		}
-
+//		if (!isDirty) {
+//		if (!isDirty && !tools.getTagPane().isDirty()) {
+//			return;
+//		}
+		main.getNoteFromEditor();
 		SaveChanges.saveChanges(currentNote, attachments, this, tools.getTagPane());
 
 		attachments.loaded();

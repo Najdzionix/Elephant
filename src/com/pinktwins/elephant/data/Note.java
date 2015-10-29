@@ -64,7 +64,7 @@ public class Note implements Comparable<Note> {
 	  if(isMarkdown()) {
 		  noteType = NoteEditorType.MARKDOWN;
 	  } else if(isHtml()){
-		  noteType = NoteEditorType.HTMLOLD;
+		  noteType = NoteEditorType.HTML;
 	  } else {
 		  noteType = NoteEditorType.OLD;
 	  }

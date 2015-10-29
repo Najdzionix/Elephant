@@ -1,6 +1,7 @@
 package com.pinktwins.elephant.data;
 
 import com.pinktwins.elephant.data.Meta;
+import com.pinktwins.elephant.editor.NoteEditorType;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
@@ -240,7 +241,7 @@ public class Notebook implements Comparable<Notebook> {
 		m.setCreatedTime();
 
 		notes.add(0, n);
-
+		n.setNoteType(NoteEditorType.HTML);
 		new NotebookEvent(NotebookEvent.Kind.noteCreated, f, f).post();
 
 		return n;
